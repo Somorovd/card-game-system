@@ -5,6 +5,7 @@ class Relic:
     def __init__(self, name):
         self.name = name
         self.player = None
+        self.data = {}
 
     def attach_to(self, player):
         self.player = player
@@ -44,5 +45,26 @@ def leech_heal(x):
             return
         print(f"{relic.name} is healing {relic.player.name} for {x}")
         relic.player.apply_healing(x)
+
+    return listener
+
+
+def counter_change_amount(field, t, amount):
+    def listener(event_data, relic):
+        if not relic.player or not event_data["player"] == relic.player:
+            return
+
+        if not relic.data.get("count"):
+            relic.data["count"] = 0
+
+        relic.data["count"] += 1
+        print(f"{relic.name} increases count by 1. Now at {relic.data['count']}/{t}")
+
+        if relic.data["count"] == t:
+            event_data[field] += amount
+            relic.data["count"] = 0
+            print(
+                f"ACTIVATE: {relic.name} increases {field} from {event_data[field] - amount} to {event_data[field]}."
+            )
 
     return listener

@@ -12,10 +12,20 @@ relic_blood_leech = (
     .add_listener("on_player_post_heal", leech_heal(2))
 )
 
+relic_tiger_claw = Relic("Tiger Claw").add_listener(
+    "on_player_pre_attack", counter_change_amount("damage", 3, 5)
+)
+
 jay = Player("Jay")
 larry = Player("Larry")
 relic_frog_legs.attach_to(jay)
+relic_tiger_claw.attach_to(jay)
 relic_blood_leech.attach_to(larry)
 
 jay.apply_healing(10)
 larry.apply_healing(5)
+
+jay.attack(larry, 2)
+jay.attack(larry, 2)
+jay.attack(larry, 2)
+jay.attack(larry, 2)
