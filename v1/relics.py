@@ -11,7 +11,7 @@ class Relic:
         self.player = player
 
     def add_listener(self, event_name, listener):
-        GAME_MANAGER.add_listener(event_name, listener, self)
+        GAME_MANAGER.add_listener(event_name, listener, relic=self)
         return self
 
 

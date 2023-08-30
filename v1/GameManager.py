@@ -5,8 +5,8 @@ class GameManager:
     def __init__(self):
         self._event_manager = EventManager()
 
-    def add_listener(self, event_name, listener, relic):
-        self._event_manager.add_listener(event_name, listener, relic)
+    def add_listener(self, event_name, listener, relic=None):
+        self._event_manager.add_listener(event_name, listener, relic=relic)
 
     def trigger_event(self, event_name, event_data):
         data_copy = event_data.copy()
