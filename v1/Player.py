@@ -1,17 +1,16 @@
 from GameManager import GAME_MANAGER
+from statblocks import PlayerStatBlock
 
 
 class Player:
     def __init__(self, name):
         self.name = name
-        self._health = 20
-
-        # GAME_MANAGER.add_listener("on_player_pre_attack", self._pre_damage_listener)
-        # GAME_MANAGER.add_listener("on_player_post_attack", self._post_damage_listener)
+        self.stats = PlayerStatBlock()
+        self.modifiers = PlayerStatBlock(is_modifier=True)
 
     @property
     def health(self):
-        return self._health
+        return self.stats.health + self.modifiers.health
 
     def attack(self, target, amount):
         print(f"Pre Attack: {self.name} is about to attack {target.name} for {amount}")
@@ -33,19 +32,11 @@ class Player:
         res = GAME_MANAGER.trigger_event("on_player_pre_heal", pre_heal_event_data)
 
         print(f"Heal: {self.name} now healing for {res['amount']} HP")
-        self._health += res["amount"]
+        self.stats.health += res["amount"]
 
         print(f"Post Heal: {self.name} has {self.health} HP\n")
         post_heal_event_data = res
         GAME_MANAGER.trigger_event("on_player_post_heal", post_heal_event_data)
-
-    # def _pre_damage_listener(event_data):
-    #     if event_data["target"] == self:
-    #         GAME_MANAGER.trigger_event("on_player_pre_take_damage", event_data)
-
-    # def _post_damage_listener(event_data):
-    #     if event_data["target"] == self:
-    #         GAME_MANAGER.trigger_event("on_player_post_take_damage", event_data)
 
     def take_damage(self, source, amount):
         print(f"Pre Take Damage: {self.name} is about to take {amount} damage")
@@ -59,7 +50,7 @@ class Player:
         )
 
         print(f"Take Damage: {self.name} takes {res['damage']} damage")
-        self._health -= res["damage"]
+        self.stats.health -= res["damage"]
 
         # if the post_take_damage event happens here, now, it will happen before the
         # attacker's post_attack event
