@@ -1,19 +1,20 @@
 from Player import Player
 from relics import *
+from effects import *
 
 
-relic_frog_legs = Relic("Frog Legs").add_listener(
-    "on_player_pre_heal", increase_healing(4)
+relic_frog_legs = Relic("Frog Legs").add_effect(
+    "on_player_pre_heal", IncreaseHealing(4)
 )
 
 relic_blood_leech = (
     Relic("Blood Leech")
-    .add_listener("on_player_pre_heal", leech_reduce(2))
-    .add_listener("on_player_post_heal", leech_heal(2))
+    .add_effect("on_player_pre_heal", LeechReduce(2))
+    .add_effect("on_player_post_heal", LeechHeal(2))
 )
 
-relic_tiger_claw = Relic("Tiger Claw").add_listener(
-    "on_player_pre_attack", counter_change_amount("damage", 3, 5)
+relic_tiger_claw = Relic("Tiger Claw").add_effect(
+    "on_player_pre_attack", CounterChangeAmount("damage", 5, 3)
 )
 
 jay = Player("Jay")
