@@ -79,11 +79,8 @@ class CounterChangeAmount(Effect):
         super().__init__()
         self.property = property
         self.amount = amount
-        self.count = count
-
-    def on_add(self, relic):
-        super().on_add(relic)
-        relic.data["counter"] = 0
+        self.max_count = count
+        self.curr_count = 0
 
     def validate(self, event_data):
         return (
@@ -91,15 +88,15 @@ class CounterChangeAmount(Effect):
         )
 
     def activate(self, event_data):
-        self.relic.data["counter"] += 1
+        self.curr_count += 1
         print(
-            f"{self.relic.name} increases count by 1. Now at {self.relic.data['counter']}/{self.count}"
+            f"{self.relic.name} increases count by 1. Now at {self.curr_count}/{self.max_count}"
         )
 
-        if self.relic.data["counter"] >= self.count:
+        if self.curr_count >= self.max_count:
             prev = event_data[self.property]
             event_data[self.property] += self.amount
-            self.relic.data["counter"] = 0
+            self.curr_count = 0
             current = event_data[self.property]
             print(
                 f"ACTIVATE: {self.relic.name} increases {self.property} from {prev} to {current}."
@@ -118,9 +115,9 @@ class ChangeRelicTiming(Effect):
         if not type(effect) == CounterChangeAmount:
             return
 
-        prev = effect.count
-        effect.count = max(0, effect.count + self.amount)
-        curr = effect.count
+        prev = effect.max_count
+        effect.max_count = max(0, effect.max_count + self.amount)
+        curr = effect.max_count
         print(
             f"Updating {effect.property} counter on {relic.name} from {prev} to {curr}"
         )
@@ -133,7 +130,7 @@ class ChangeRelicTiming(Effect):
 
     def on_unequip(self, player):
         for effect in self.affected_effects:
-            effect.count = max(0, effect - self.amount)
+            effect.count = max(0, effect.max_count - self.amount)
         self.affected_effects = []
 
     def validate(self, event_data):
