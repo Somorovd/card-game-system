@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from EventManager import Listener
 
 
-class Effect(ABC):
+class Effect(Listener):
     def __init__(self):
         self.relic = None
 
@@ -9,11 +10,7 @@ class Effect(ABC):
         self.relic = relic
 
     def validate(self, event_data):
-        return self.relic.player != None
-
-    @abstractmethod
-    def listener(self, event_data):
-        pass
+        return not self.relic.player == None
 
 
 class IncreaseHealing(Effect):
@@ -26,10 +23,7 @@ class IncreaseHealing(Effect):
             super().validate(event_data) and event_data["player"] == self.relic.player
         )
 
-    def listener(self, event_data):
-        if not self.validate(event_data):
-            return
-
+    def activate(self, event_data):
         print(
             f"{self.relic.name} increasing healing from {event_data['amount']} to {event_data['amount'] + self.amount}"
         )
@@ -47,10 +41,7 @@ class LeechReduce(Effect):
             and not event_data["player"] == self.relic.player
         )
 
-    def listener(self, event_data):
-        if not self.validate(event_data):
-            return
-
+    def activate(self, event_data):
         print(
             f"{self.relic.name} reducing {event_data['player'].name} healing by {self.amount}"
         )
@@ -68,10 +59,7 @@ class LeechHeal(Effect):
             and not event_data["player"] == self.relic.player
         )
 
-    def listener(self, event_data):
-        if not self.validate(event_data):
-            return
-
+    def activate(self, event_data):
         print(
             f"{self.relic.name} is healing {self.relic.player.name} for {self.amount}"
         )
@@ -94,10 +82,7 @@ class CounterChangeAmount(Effect):
             super().validate(event_data) and event_data["player"] == self.relic.player
         )
 
-    def listener(self, event_data):
-        if not self.validate(event_data):
-            return
-
+    def activate(self, event_data):
         self.relic.data["counter"] += 1
         print(
             f"{self.relic.name} increases count by 1. Now at {self.relic.data['counter']}/{self.count}"

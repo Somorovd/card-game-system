@@ -14,5 +14,5 @@ class Relic:
 
     def add_effect(self, event_name, effect):
         effect.on_add(self)
-        GAME_MANAGER.add_listener(event_name, effect.listener)
+        GAME_MANAGER.add_listener(event_name, effect)
         return self
