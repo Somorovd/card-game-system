@@ -1,0 +1,20 @@
+Maybe there should be different types of 'add_effect'
+because not all relics need events. Some just do things
+when they are equipped like a max health upgrade.
+
+relic that decreases the count for all counter relics by 1
+- Needs to find all the relics with related effect and modify the count stat
+	- DONE, but could potentially be improved beyond a simple search.
+- New counter relic must also be affected
+	- DONE, on_player_add_relic event
+- Removable
+- What if this relic is modified? Needs to propagate the changes down.
+
+
+equipment (A) that adds 2 health to all players
+equipment (B) that modifies A, double effect for [condition]
+
+Turn events into objects with predefined properties
+Validate events on relics and make sure that event is compatible
+Some relics might have predefined connected events
+- Counter modifiers need to have a "on_player_add_relic" to update new relics
