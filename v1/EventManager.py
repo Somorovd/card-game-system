@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
 
 
 class EventManager:
     def __init__(self):
-        self._listeners = {}
+        self._listeners = defaultdict(list)
 
     def add_listener(self, event_name, listener):
-        if event_name not in self._listeners:
-            self._listeners[event_name] = []
         self._listeners[event_name].append(listener)
+
+    def remove_listener(self, event_name, listener):
+        self._listeners[event_name].remove(listener)
 
     def notify(self, event_name, event_data):
         if not event_name in self._listeners:

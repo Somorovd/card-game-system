@@ -8,6 +8,9 @@ class GameManager:
     def add_listener(self, event_name, listener):
         self._event_manager.add_listener(event_name, listener)
 
+    def remove_listener(self, event_name, listener):
+        self._event_manager.remove_listener(event_name, listener)
+
     def trigger_event(self, event_name, event_data):
         data_copy = event_data.copy()
         self._event_manager.notify(event_name, data_copy)

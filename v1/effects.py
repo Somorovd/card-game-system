@@ -1,12 +1,14 @@
 from EventManager import Listener
+from GameManager import GAME_MANAGER
 
 
 class Effect(Listener):
     def __init__(self):
         self.relic = None
 
-    def on_add(self, relic):
+    def on_add(self, relic, event_name):
         self.relic = relic
+        self.event_name = event_name
 
     def on_equip(self, player):
         pass
@@ -153,15 +155,29 @@ class IncreaseHealth(Effect):
         super().__init__()
         self.amount = amount
 
-    def validate(self, event_data):
-        return (
-            super().validate(event_data)
-            and event_data["player"] == self.relic.player
-            and event_data["relic"] == self.relic
-        )
-
     def activate(self, event_data):
         print(
-            f"{self.relic.name} is increasing {self.relic.player.name}'s health by {self.amount}"
+            f"{self.relic.name} is increasing {event_data['player'].name}'s health by {self.amount}"
         )
-        self.relic.player.apply_healing(self.amount)
+        event_data["player"].apply_healing(self.amount)
+
+
+class NTimes(Effect):
+    def __init__(self, count, effect):
+        super().__init__()
+        self.effect = effect
+        self.max_count = count
+        self.curr_count = 0
+
+    def on_add(self, relic, event_name):
+        super().on_add(relic, event_name)
+        self.effect.on_add(relic, event_name)
+
+    def validate(self, event_data):
+        return super().validate(event_data)
+
+    def activate(self, event_data):
+        self.curr_count += 1
+        self.effect.activate(event_data)
+        if self.curr_count >= self.max_count:
+            GAME_MANAGER.remove_listener(self.event_name, self)
