@@ -8,7 +8,7 @@ class EventManager:
     def add_listener(self, event_name, listener):
         if event_name not in self._listeners:
             self._listeners[event_name] = []
-            self._listeners[event_name].append(listener)
+        self._listeners[event_name].append(listener)
 
     def notify(self, event_name, event_data):
         if not event_name in self._listeners:

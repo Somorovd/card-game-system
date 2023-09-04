@@ -42,3 +42,7 @@ relic_tiger_claw = Relic("Tiger Claw").add_effect(
 relic_hawk_eye = Relic("Hawk Eye").add_effect(
     "on_player_add_relic", ChangeRelicTiming(-1)
 )
+
+relic_lion_heart = Relic("Lion Heart").add_effect(
+    "on_player_add_relic", IncreaseHealth(15)
+)

@@ -19,7 +19,7 @@ class Player:
         relic.equip_to_player(self)
         print()
         add_relic_event_data = {"player": self, "relic": relic}
-        GAME_MANAGER.trigger_event("on_player_add_relic", add_relic_event_data)
+        res = GAME_MANAGER.trigger_event("on_player_add_relic", add_relic_event_data)
 
     def attack(self, target, amount):
         print(f"Pre Attack: {self.name} is about to attack {target.name} for {amount}")

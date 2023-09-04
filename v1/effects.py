@@ -146,3 +146,22 @@ class ChangeRelicTiming(Effect):
 
         for effect in relic.effects:
             self.modify_relic_effect(relic, effect)
+
+
+class IncreaseHealth(Effect):
+    def __init__(self, amount):
+        super().__init__()
+        self.amount = amount
+
+    def validate(self, event_data):
+        return (
+            super().validate(event_data)
+            and event_data["player"] == self.relic.player
+            and event_data["relic"] == self.relic
+        )
+
+    def activate(self, event_data):
+        print(
+            f"{self.relic.name} is increasing {self.relic.player.name}'s health by {self.amount}"
+        )
+        self.relic.player.apply_healing(self.amount)
