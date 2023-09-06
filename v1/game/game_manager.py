@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 
 
-class EventManager:
+class GameManager:
     def __init__(self):
         self._listeners = defaultdict(list)
 
@@ -12,7 +12,12 @@ class EventManager:
     def remove_listener(self, event_name, listener):
         self._listeners[event_name].remove(listener)
 
-    def notify(self, event_name, event_data):
+    def trigger_event(self, event_name, event_data):
+        data_copy = event_data.copy()
+        self._notify(event_name, data_copy)
+        return data_copy
+
+    def _notify(self, event_name, event_data):
         if not event_name in self._listeners:
             return
 
@@ -29,3 +34,6 @@ class Listener(ABC):
     @abstractmethod
     def validate(self, event_data):
         pass
+
+
+GAME_MANAGER = GameManager()

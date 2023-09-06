@@ -1,5 +1,5 @@
-from GameManager import GAME_MANAGER
-from statblocks import PlayerStatBlock
+from .game_manager import GAME_MANAGER
+from .statblocks import PlayerStatBlock
 
 
 class Player:

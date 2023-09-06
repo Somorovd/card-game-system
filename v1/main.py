@@ -1,6 +1,4 @@
-from Player import Player
-from relics import *
-from effects import *
+from game import *
 
 jay = Player("Jay")
 larry = Player("Larry")

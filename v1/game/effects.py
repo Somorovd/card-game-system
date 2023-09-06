@@ -1,5 +1,4 @@
-from EventManager import Listener
-from GameManager import GAME_MANAGER
+from .game_manager import GAME_MANAGER, Listener
 
 
 class Effect(Listener):

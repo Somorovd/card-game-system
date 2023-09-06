@@ -1,5 +1,5 @@
-from GameManager import GAME_MANAGER
-from effects import *
+from .game_manager import GAME_MANAGER
+from .effects import *
 
 
 class Relic:
