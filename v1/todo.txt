@@ -1,6 +1,6 @@
 
 
-SET UP TESTING to sty sane between changes
+SET UP TESTING to stay sane between changes
 
 
 Maybe there should be different types of 'add_effect'
@@ -28,7 +28,7 @@ equipment (B) that modifies A, double effect for [condition]
 Turn events into objects with predefined properties
 Validate events on relics and make sure that event is compatible
 Some relics might have predefined connected events
-- Counter modifiers need to have a "on_player_add_relic" to update new relics
+*   Counter modifiers need to have a "on_player_add_relic" to update new relics
 
 
 Not a huge fan of the equip / unequip of the change timing effect.
@@ -40,8 +40,19 @@ pass in (max_count, curr_count, triggers) in event_data
 Effect that adds more effects to the relic.
 Effect that lets you trigger a relic with an on equip effect
 
-Abstract out vlidators so that the same effects can happen under different conditions
-
-Combine GameManager and EventManager
+Abstract out validators so that the same effects can happen under different conditions
 
 All effects should use event_data rather than personal data
+
+Relic with effect "Modifiers of type X add +1 to you"
+*   add_modifier event
+*   when modifier added, apply mod, add listner to mod,
+    then trigger the add_modifier. modify the mod and trigger
+    the event which ripples back down to us and updates mod value.
+X   But what if the modifier affected multiple player (enchantment)
+    For example all players gain 2 power.
+
+Relic with "Gain power equal the number of relics"
+*   Has a modifier for power. Which has a listener to
+    on_player_add_relic and remove_relic that would trigger
+    an update.
