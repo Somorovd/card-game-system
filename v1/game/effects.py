@@ -1,7 +1,7 @@
-from .game_manager import GAME_MANAGER, Listener
+from .game_manager import GAME_MANAGER, Subject
 
 
-class Effect(Listener):
+class Effect:
     def __init__(self):
         self.relic = None
 
@@ -14,6 +14,10 @@ class Effect(Listener):
 
     def on_unequip(self, player):
         pass
+
+    def update(self, event_data):
+        if self.validate(event_data):
+            self.activate(event_data)
 
     def validate(self, event_data):
         return not self.relic.player == None
@@ -172,6 +176,10 @@ class NTimes(Effect):
         super().on_add(relic, event_name)
         self.effect.on_add(relic, event_name)
 
+    def on_equip(self, player):
+        super().on_equip(player)
+        self.effect.on_equip(player)
+
     def validate(self, event_data):
         return super().validate(event_data)
 
@@ -179,4 +187,20 @@ class NTimes(Effect):
         self.curr_count += 1
         self.effect.activate(event_data)
         if self.curr_count >= self.max_count:
-            GAME_MANAGER.remove_listener(self.event_name, self)
+            GAME_MANAGER.remove_listener(self.event_name, self.update)
+
+
+class StatModifier(Effect):
+    def __init__(self, stat, amount):
+        self.stat = stat
+        self.amount = amount
+
+    def on_equip(self, player):
+        player.add_stat_modifier(self.stat, self.relic)
+
+    def activate(self, _event_data):
+        print(
+            f"{self.relic.name} is modifying {self.stat} by {self.amount} on {self.relic.player.name}"
+        )
+        mod_update_event_data = {"stat": self.stat, "amount": self.amount}
+        self.relic.trigger_event("on_mod_update", mod_update_event_data)

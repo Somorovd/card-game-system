@@ -2,25 +2,23 @@ from .game_manager import GAME_MANAGER
 from .effects import *
 
 
-class Relic:
+class Relic(Subject):
     def __init__(self, name):
+        super().__init__()
         self.name = name
-        self._player = None
+        self.player = None
         self.effects = []
         self.data = {}
 
     def add_effect(self, event_name, effect):
+        print(effect)
         self.effects.append(effect)
         effect.on_add(self, event_name)
-        GAME_MANAGER.add_listener(event_name, effect)
+        GAME_MANAGER.add_listener(event_name, effect.update)
         return self
 
-    @property
-    def player(self):
-        return self._player
-
     def equip_to_player(self, player):
-        self._player = player
+        self.player = player
         for effect in self.effects:
             effect.on_equip(player)
 
@@ -43,6 +41,8 @@ relic_hawk_eye = Relic("Hawk Eye").add_effect(
     "on_player_add_relic", ChangeRelicTiming(-1)
 )
 
-relic_lion_heart = Relic("Lion Heart").add_effect(
-    "on_player_add_relic", NTimes(1, IncreaseHealth(15))
+relic_lion_heart = (
+    Relic("Lion Heart")
+    .add_effect("on_player_add_relic", NTimes(1, StatModifier("max_health", 10)))
+    .add_effect("on_player_add_relic", NTimes(1, StatModifier("health", 5)))
 )
