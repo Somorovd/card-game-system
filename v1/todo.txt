@@ -36,6 +36,11 @@ Could switch to an event based system as well.
 .add_effect("on_relic_counter_increase", ChangeTiming(1))
 pass in (max_count, curr_count, triggers) in event_data
 
+ChangeRelicTiming has a list of effects,
+what happens if the relic with thaat effect is deleted?
+*   Add a remove_relic listener?
+*   listen to each other?
+
 
 Effect that adds more effects to the relic.
 Effect that lets you trigger a relic with an on equip effect
@@ -46,7 +51,7 @@ All effects should use event_data rather than personal data
 
 Relic with effect "Modifiers of type X add +1 to you"
 *   add_modifier event
-*   when modifier added, apply mod, add listner to mod,
+*   when modifier added, apply mod, add listener to mod,
     then trigger the add_modifier. modify the mod and trigger
     the event which ripples back down to us and updates mod value.
 X   But what if the modifier affected multiple player (enchantment)
