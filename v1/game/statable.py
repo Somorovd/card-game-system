@@ -8,9 +8,9 @@ class Statable(Subject):
 
     def add_stat_modifier(self, stat_type, source):
         if not stat_type in self.stats:
-            raise TypeError(f"{self} has no stat '{stat_type}'")
+            self.stats[stat_type] = Stat(0)
         if not issubclass(type(source), Subject):
-            raise TypeError("Modifier source must implament Subject interface")
+            raise TypeError("Modifier source must implement Subject interface")
 
         stat = self.stats[stat_type]
         stat.add_source(source)
@@ -22,7 +22,7 @@ class Statable(Subject):
             prev = stat.current
             stat.update_source(source, event_data["amount"])
             current = stat.current
-            print(f"{stat_type} updated from {prev} to {current}")
+            print(f"{self.name}: {stat_type} updated from {prev} to {current}")
             stat_update_event_data = {"stat": stat_type, "amount": current}
             self.trigger_event("on_stat_update", stat_update_event_data)
 

@@ -153,18 +153,6 @@ class ChangeRelicTiming(Effect):
             self.modify_relic_effect(relic, effect)
 
 
-class IncreaseHealth(Effect):
-    def __init__(self, amount):
-        super().__init__()
-        self.amount = amount
-
-    def activate(self, event_data):
-        print(
-            f"{self.relic.name} is increasing {event_data['player'].name}'s health by {self.amount}"
-        )
-        event_data["player"].apply_healing(self.amount)
-
-
 class NTimes(Effect):
     def __init__(self, count, effect):
         super().__init__()
@@ -190,17 +178,19 @@ class NTimes(Effect):
             GAME_MANAGER.remove_listener(self.event_name, self.update)
 
 
-class StatModifier(Effect):
-    def __init__(self, stat, amount):
-        self.stat = stat
+class StatModifier(Subject, Effect):
+    def __init__(self, stat_type, amount):
+        super().__init__()
+        self.stat_type = stat_type
         self.amount = amount
 
     def on_equip(self, player):
-        player.add_stat_modifier(self.stat, self.relic)
+        self.relic.add_stat_modifier(self.stat_type, self)
+        player.add_stat_modifier(self.stat_type, self.relic)
 
     def activate(self, _event_data):
-        print(
-            f"{self.relic.name} is modifying {self.stat} by {self.amount} on {self.relic.player.name}"
-        )
-        stat_update_event_data = {"stat": self.stat, "amount": self.amount}
-        self.relic.trigger_event("on_stat_update", stat_update_event_data)
+        # print(
+        #     f"{self.relic.name} is modifying {self.stat_type} by {self.amount} on {self.relic.player.name}"
+        # )
+        stat_update_event_data = {"stat": self.stat_type, "amount": self.amount}
+        self.trigger_event("on_stat_update", stat_update_event_data)

@@ -1,8 +1,9 @@
 from .game_manager import GAME_MANAGER
+from .statable import Statable, Stat
 from .effects import *
 
 
-class Relic(Subject):
+class Relic(Statable):
     def __init__(self, name):
         super().__init__()
         self.name = name
@@ -45,3 +46,5 @@ relic_lion_heart = (
     .add_effect("on_player_add_relic", NTimes(1, StatModifier("max_health", 10)))
     .add_effect("on_player_add_relic", NTimes(1, StatModifier("health", 5)))
 )
+
+# relic_pig_heart = Relic("Pig Heart").add_effect()
