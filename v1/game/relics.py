@@ -11,7 +11,6 @@ class Relic(Subject):
         self.data = {}
 
     def add_effect(self, event_name, effect):
-        print(effect)
         self.effects.append(effect)
         effect.on_add(self, event_name)
         GAME_MANAGER.add_listener(event_name, effect.update)

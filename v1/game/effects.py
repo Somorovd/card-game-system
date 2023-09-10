@@ -202,5 +202,5 @@ class StatModifier(Effect):
         print(
             f"{self.relic.name} is modifying {self.stat} by {self.amount} on {self.relic.player.name}"
         )
-        mod_update_event_data = {"stat": self.stat, "amount": self.amount}
-        self.relic.trigger_event("on_mod_update", mod_update_event_data)
+        stat_update_event_data = {"stat": self.stat, "amount": self.amount}
+        self.relic.trigger_event("on_stat_update", stat_update_event_data)
