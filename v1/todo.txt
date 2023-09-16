@@ -61,3 +61,5 @@ Relic with "Gain power equal the number of relics"
 *   Has a modifier for power. Which has a listener to
     on_player_add_relic and remove_relic that would trigger
     an update.
+
+An effect that toggles a value.
