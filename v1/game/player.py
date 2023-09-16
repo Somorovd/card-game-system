@@ -8,7 +8,7 @@ class Player(Statable):
         self.name = name
         self.stats = {
             "health": Stat(10),
-            "max_health": Stat(10),
+            "max_health": Stat(100),
             "power": Stat(2),
         }
         self.relics = []

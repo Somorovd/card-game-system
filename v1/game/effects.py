@@ -4,8 +4,16 @@ from .game_manager import GAME_MANAGER, Subject
 class Effect:
     def __init__(self):
         self.relic = None
+        self.validators = []
 
-    def on_add(self, relic, event_name):
+    def add_validator(self, validator):
+        self.validators.append(validator)
+        return self
+
+    def validate(self, event_data):
+        return all([v.validate(self.relic, event_data) for v in self.validators])
+
+    def on_add_to_relic(self, relic, event_name):
         self.relic = relic
         self.event_name = event_name
 
@@ -19,9 +27,6 @@ class Effect:
         if self.validate(event_data):
             self.activate(event_data)
 
-    def validate(self, event_data):
-        return not self.relic.player == None
-
     def activate(self, event_data):
         pass
 
@@ -30,11 +35,6 @@ class IncreaseHealing(Effect):
     def __init__(self, amount):
         super().__init__()
         self.amount = amount
-
-    def validate(self, event_data):
-        return (
-            super().validate(event_data) and event_data["player"] == self.relic.player
-        )
 
     def activate(self, event_data):
         print(
@@ -48,12 +48,6 @@ class LeechReduce(Effect):
         super().__init__()
         self.amount = amount
 
-    def validate(self, event_data):
-        return (
-            super().validate(event_data)
-            and not event_data["player"] == self.relic.player
-        )
-
     def activate(self, event_data):
         print(
             f"{self.relic.name} reducing {event_data['player'].name} healing by {self.amount}"
@@ -65,12 +59,6 @@ class LeechHeal(Effect):
     def __init__(self, amount):
         super().__init__()
         self.amount = amount
-
-    def validate(self, event_data):
-        return (
-            super().validate(event_data)
-            and not event_data["player"] == self.relic.player
-        )
 
     def activate(self, event_data):
         print(
@@ -86,11 +74,6 @@ class CounterChangeAmount(Effect):
         self.amount = amount
         self.max_count = count
         self.curr_count = 0
-
-    def validate(self, event_data):
-        return (
-            super().validate(event_data) and event_data["player"] == self.relic.player
-        )
 
     def activate(self, event_data):
         self.curr_count += 1
@@ -138,11 +121,6 @@ class ChangeRelicTiming(Effect):
             effect.count = max(0, effect.max_count - self.amount)
         self.affected_effects = []
 
-    def validate(self, event_data):
-        return (
-            super().validate(event_data) and event_data["player"] == self.relic.player
-        )
-
     def activate(self, event_data):
         # event is an on_player_add_relic
         relic = event_data.get("relic")
@@ -160,16 +138,13 @@ class NTimes(Effect):
         self.max_count = count
         self.curr_count = 0
 
-    def on_add(self, relic, event_name):
-        super().on_add(relic, event_name)
-        self.effect.on_add(relic, event_name)
+    def on_add_to_relic(self, relic, event_name):
+        super().on_add_to_relic(relic, event_name)
+        self.effect.on_add_to_relic(relic, event_name)
 
     def on_equip(self, player):
         super().on_equip(player)
         self.effect.on_equip(player)
-
-    def validate(self, event_data):
-        return super().validate(event_data)
 
     def activate(self, event_data):
         self.curr_count += 1
@@ -185,8 +160,8 @@ class StatModifier(Subject, Effect):
         self.amount = amount
 
     def on_equip(self, player):
-        self.relic.add_stat_modifier(self.stat_type, self)
-        player.add_stat_modifier(self.stat_type, self.relic)
+        self.relic.add_stat_source(self.stat_type, self)
+        player.add_stat_source(self.stat_type, self.relic)
 
     def activate(self, _event_data):
         # print(

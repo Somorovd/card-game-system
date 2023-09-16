@@ -28,7 +28,7 @@ equipment (B) that modifies A, double effect for [condition]
 Turn events into objects with predefined properties
 Validate events on relics and make sure that event is compatible
 Some relics might have predefined connected events
-*   Counter modifiers need to have a "on_player_add_relic" to update new relics
+*   Relic that modify relic need to have a "on_player_add_relic" to update new relics
 
 
 Not a huge fan of the equip / unequip of the change timing effect.

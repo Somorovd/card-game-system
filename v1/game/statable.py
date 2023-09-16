@@ -6,7 +6,7 @@ class Statable(Subject):
         super().__init__()
         self.stats = {}
 
-    def add_stat_modifier(self, stat_type, source):
+    def add_stat_source(self, stat_type, source):
         if not stat_type in self.stats:
             self.stats[stat_type] = Stat(0)
         if not issubclass(type(source), Subject):
@@ -44,3 +44,9 @@ class Stat:
         self.mod += diff
         self.current += diff
         self.sources[source] = amount
+
+
+class StatModifier(Statable):
+    def __init__(self, stat_type, amount):
+        super().__init__()
+        self.stats[stat_type]
