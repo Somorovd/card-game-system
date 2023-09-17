@@ -1,4 +1,5 @@
 from .game_manager import GAME_MANAGER, Subject
+from .statable import Statable, Stat
 from .targeters import *
 
 
@@ -45,6 +46,19 @@ class Effect:
         pass
 
 
+class EffectDecorator(Effect):
+    def __init__(self):
+        super().__init__()
+
+    def on_add_to_relic(self, relic, event_name):
+        super().on_add_to_relic(relic, event_name)
+        self.effect.on_add_to_relic(relic, event_name)
+
+    def on_equip(self, player):
+        super().on_equip(player)
+        self.effect.on_equip(player)
+
+
 class EventDataUpdate(Effect):
     def __init__(self, data_type, amount):
         super().__init__()
@@ -82,47 +96,26 @@ class Heal(Effect):
         target.apply_healing(self.amount)
 
 
-class Counter(Effect):
+class Counter(EffectDecorator, Statable):
     def __init__(self, max_count, effect):
         super().__init__()
         self.effect = effect
-        self.max_count = max_count
-        self.curr_count = 0
-
-    def on_add_to_relic(self, relic, event_name):
-        super().on_add_to_relic(relic, event_name)
-        self.effect.on_add_to_relic(relic, event_name)
-
-    def on_equip(self, player):
-        super().on_equip(player)
-        self.effect.on_equip(player)
+        self.stats = {"max_count": Stat(max_count), "count": Stat(0)}
 
     def activate(self, event_data):
-        self.curr_count += 1
-        print(
-            f"{self.relic.name} increases count by 1. Now at {self.curr_count}/{self.max_count}"
-        )
+        self.adjust_stat("count", 1)
 
-        if self.curr_count >= self.max_count:
-            print(f"{self.relic.name} cowntdown complete. Activating...")
+        if self.get_stat("count") >= self.get_stat("max_count"):
             self.effect.activate(event_data)
-            self.curr_count = 0
+            self.adjust_stat("count", -self.get_stat("count"))
 
 
-class NTimes(Effect):
+class NTimes(EffectDecorator):
     def __init__(self, max_count, effect):
         super().__init__()
         self.effect = effect
         self.max_count = max_count
         self.curr_count = 0
-
-    def on_add_to_relic(self, relic, event_name):
-        super().on_add_to_relic(relic, event_name)
-        self.effect.on_add_to_relic(relic, event_name)
-
-    def on_equip(self, player):
-        super().on_equip(player)
-        self.effect.on_equip(player)
 
     def activate(self, event_data):
         self.curr_count += 1
