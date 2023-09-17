@@ -70,3 +70,7 @@ Or perhaps this just an effec tht negates another effect
 Abilities are a composite of effects.
 	Lifesteal = Ability.add_effect(heal on damage dealt)
 	Relic.add_ability(Lifesteal)
+
+mediator patterns for stats that have a current and max (like health, mana)?
+mediator will create a connection between max and current
+and adjust accordingly whenever something changes
