@@ -6,6 +6,15 @@ class Statable(Subject):
         super().__init__()
         self.stats = {}
 
+    def has_stat(self, stat_type):
+        return stat_type in self.stats
+
+    def get_stat(self, stat_type):
+        return self.stats[stat_type].current
+
+    def adjust_stat(self, stat_type, amount):
+        self.stats[stat_type].adjust_current(amount)
+
     def add_stat_source(self, stat_type, source):
         if not stat_type in self.stats:
             self.stats[stat_type] = Stat(0)
@@ -35,6 +44,10 @@ class Stat:
         self.current = current or base
         self.mod = 0
         self.sources = {}
+
+    # there should be an event associted with this
+    def adjust_current(self, amount):
+        self.current += amount
 
     def add_source(self, source):
         self.sources[source] = 0
