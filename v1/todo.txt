@@ -63,3 +63,10 @@ Relic with "Gain power equal the number of relics"
     an update.
 
 An effect that toggles a value.
+
+How to prevent certain effects from triggering on events?
+Or perhaps this just an effec tht negates another effect
+
+Abilities are a composite of effects.
+	Lifesteal = Ability.add_effect(heal on damage dealt)
+	Relic.add_ability(Lifesteal)

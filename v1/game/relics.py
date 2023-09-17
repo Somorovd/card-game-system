@@ -2,6 +2,7 @@ from .game_manager import GAME_MANAGER
 from .statable import Statable, Stat
 from .effects import *
 from .validators import *
+from .targeters import *
 
 
 class Relic(Statable):
@@ -38,6 +39,7 @@ relic_blood_leech = (
     .add_effect(
         "on_player_post_heal",
         Heal(2)
+        .add_targeters(attached_player_targeter)
         .add_validator(AttachedPlayerValidator().invert())
         .add_validator(PropertyInRange("amount", min=1)),
     )
@@ -57,12 +59,14 @@ relic_lion_heart = (
     Relic("Lion Heart")
     .add_effect(
         "on_player_add_relic",
-        NTimes(1, StatModifier("max_health", 10)).add_validator(
-            AttachedPlayerValidator()
-        ),
+        NTimes(1, StatModifier("max_health", 10))
+        .add_targeters(attached_player_targeter)
+        .add_validator(AttachedPlayerValidator()),
     )
     .add_effect(
         "on_player_add_relic",
-        NTimes(1, StatModifier("health", 5)).add_validator(AttachedPlayerValidator()),
+        NTimes(1, StatModifier("health", 5))
+        .add_targeters(attached_player_targeter)
+        .add_validator(AttachedPlayerValidator()),
     )
 )

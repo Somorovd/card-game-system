@@ -46,14 +46,10 @@ class Player(Statable):
         )
 
     def apply_healing(self, amount):
-        print(f"Pre Heal: {self.name} ({self.health} HP) is about to heal for {amount}")
         pre_heal_event_data = {"player": self, "amount": amount}
         res = GAME_MANAGER.trigger_event("on_player_pre_heal", pre_heal_event_data)
-
-        print(f"Heal: {self.name} now healing for {res['amount']} HP")
         self.health += res["amount"]
 
-        print(f"Post Heal: {self.name} has {self.health} HP\n")
         post_heal_event_data = res
         GAME_MANAGER.trigger_event("on_player_post_heal", post_heal_event_data)
 
