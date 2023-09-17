@@ -25,13 +25,6 @@ class Relic(Statable):
             effect.on_equip(player)
 
 
-relic_tiger_claw = Relic("Tiger Claw").add_effect(
-    "on_player_pre_attack",
-    Counter(3, EventDataUpdate("damage", 5)).add_event_validator(
-        AttachedPlayerValidator()
-    ),
-)
-
 relic_hawk_eye = Relic("Hawk Eye").add_effect(
     "on_player_add_relic",
     ChangeRelicTiming(-1).add_event_validator(AttachedPlayerValidator().invert()),

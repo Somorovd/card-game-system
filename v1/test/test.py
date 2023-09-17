@@ -111,3 +111,33 @@ def test_blood_leech(players):
     # end
     assert jay.health == 20
     assert larry.health == 18
+
+
+def test_tiger_claw(players):
+    counter_effect = (
+        Counter(3, EventDataUpdate("damage", 2)).add_event_validator(
+            AttachedPlayerValidator()
+        ),
+    )[0]
+
+    relic_tiger_claw = Relic("Tiger Claw").add_effect(
+        "on_player_pre_attack", counter_effect
+    )
+    jay = players["jay"]
+    larry = players["larry"]
+
+    jay.add_relic(relic_tiger_claw)
+
+    assert counter_effect.get_stat("count") == 0
+    jay.attack(larry, 2)
+    assert larry.health == 8
+    assert counter_effect.get_stat("count") == 1
+    jay.attack(larry, 2)
+    assert larry.health == 6
+    assert counter_effect.get_stat("count") == 2
+    jay.attack(larry, 2)
+    assert larry.health == 2
+    assert counter_effect.get_stat("count") == 0
+    jay.attack(larry, 2)
+    assert larry.health == 0
+    assert counter_effect.get_stat("count") == 1
