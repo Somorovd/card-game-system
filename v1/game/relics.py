@@ -25,23 +25,6 @@ class Relic(Statable):
             effect.on_equip(player)
 
 
-relic_blood_leech = (
-    Relic("Blood Leech")
-    .add_effect(
-        "on_player_pre_heal",
-        EventDataUpdate("amount", -2).add_event_validator(
-            AttachedPlayerValidator().invert()
-        ),
-    )
-    .add_effect(
-        "on_player_post_heal",
-        Heal(2)
-        .add_targeters(attached_player_targeter)
-        .add_event_validator(AttachedPlayerValidator().invert())
-        .add_event_validator(PropertyInRange("amount", min=1)),
-    )
-)
-
 relic_tiger_claw = Relic("Tiger Claw").add_effect(
     "on_player_pre_attack",
     Counter(3, EventDataUpdate("damage", 5)).add_event_validator(

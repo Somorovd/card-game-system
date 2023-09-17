@@ -71,3 +71,43 @@ def test_increase_attached_player_healing_relic(players):
     larry.apply_healing(4)
     assert larry.health == 14
     assert jay.health == health
+
+
+def test_blood_leech(players):
+    get_blood_leech = lambda: (
+        Relic("Blood Leech")
+        .add_effect(
+            "on_player_pre_heal",
+            EventDataUpdate("amount", -2).add_event_validator(
+                AttachedPlayerValidator().invert()
+            ),
+        )
+        .add_effect(
+            "on_player_post_heal",
+            Heal(2)
+            .add_targeters(attached_player_targeter)
+            .add_event_validator(AttachedPlayerValidator().invert())
+            # create a base case to prevent infinite loops
+            .add_event_validator(PropertyInRange("amount", min=1)),
+        )
+    )
+    jay = players["jay"]
+    larry = players["larry"]
+
+    jay.add_relic(get_blood_leech())
+
+    larry.apply_healing(10)
+    assert larry.health == 18
+    assert jay.health == 12
+
+    jay.apply_healing(4)
+    assert jay.health == 16
+
+    larry.add_relic(get_blood_leech())
+
+    jay.apply_healing(6)
+    # jay 6 -> 4 + larry 2
+    # larry 2 -> 0
+    # end
+    assert jay.health == 20
+    assert larry.health == 18
