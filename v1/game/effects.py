@@ -8,7 +8,7 @@ class Effect:
         self.validators = []
         self.targeters = []
 
-    def add_validator(self, validator):
+    def add_event_validator(self, validator):
         self.validators.append(validator)
         return self
 
