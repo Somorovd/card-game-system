@@ -100,7 +100,10 @@ class Counter(EffectDecorator, Statable):
     def __init__(self, max_count, effect):
         super().__init__()
         self.effect = effect
-        self.stats = {"max_count": Stat(max_count), "count": Stat(0)}
+        self.stats = {
+            "max_count": Stat("max_count", max_count),
+            "count": Stat("count", 0),
+        }
 
     def activate(self, event_data):
         self.adjust_stat("count", 1)

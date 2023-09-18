@@ -7,9 +7,9 @@ class Player(Statable):
         super().__init__()
         self.name = name
         self.stats = {
-            "health": Stat(10),
-            "max_health": Stat(100),
-            "power": Stat(2),
+            "health": Stat("health", 10),
+            "max_health": Stat("max_health", 100),
+            "power": Stat("power", 2),
         }
         self.relics = []
 

@@ -8,16 +8,6 @@ larry = Player("Larry")
 # relic_lion_heart.add_stat_source("max_health", mod)
 # mod.activate(None)
 
-larry.add_relic(relic_blood_leech)
-# jay.add_relic(relic_frog_legs)
-jay.apply_healing(10)
-# larry.apply_healing(5)
-
-# jay.add_relic(relic_tiger_claw)
-# jay.attack(larry, 2)
-# jay.attack(larry, 2)
-# jay.attack(larry, 2)
-# jay.attack(larry, 2)
 
 # jay.add_relic(relic_hawk_eye)
 # jay.attack(larry, 2)

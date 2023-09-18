@@ -1,16 +1,4 @@
-import pytest
-from game import *
-
-
-@pytest.fixture
-def players():
-    jay = Player("Jay")
-    jay.stats["health"] = Stat(10)
-    jay.stats["max_health"] = Stat(100)
-    larry = Player("Larry")
-    larry.stats["health"] = Stat(10)
-    larry.stats["max_health"] = Stat(100)
-    return {"jay": jay, "larry": larry}
+from test import *
 
 
 def test_player_healing(players):
@@ -113,7 +101,7 @@ def test_blood_leech(players):
     assert larry.health == 18
 
 
-def test_tiger_claw(players):
+def test_counter_tiger_claw(players):
     counter_effect = (
         Counter(3, EventDataUpdate("damage", 2)).add_event_validator(
             AttachedPlayerValidator()
