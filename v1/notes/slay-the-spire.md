@@ -364,3 +364,154 @@ Probbly using the player data in the event
 **Pen Nib** - Every 10th Attck you play deals double damage.
 
 _See **Nunchaku**_
+
+**Potion Belt** - Upon pickup, gain 2 Potion slots
+
+```python
+Relic("Potion Belt")
+.add_effect(
+	"on_player_add_relic"
+	NTimes(1, StatUpgrade("potion_slots", 2))
+	.attached_player()
+	.add_event_validator(
+		PropertyEquals("relic", AttachedRelicTargetter())
+	)
+)
+```
+
+**Preserved Insect** - Enemies in Elite rooms have 25% less HP.
+
+```python
+Relice("Preserved Insect")
+.add_effect(
+	SequenceEffect(
+		StatUpdate("health", MultOp(0.75))
+		.add_targeter(AttachedPlayerEnemyTargeter())
+	)
+	.add_seq(
+		"on_player_climb_floor",
+		PropertyEquals("dest", "elite")
+	)
+	.add_seq("on_combat_start")
+)
+```
+
+**Regal Pillow** - Heal and additional 15 HP when you Rest.
+
+_ALT: Healing from Resting is increased by 15_
+
+```python
+Relic("Regal Pillow")
+.add_effect(
+	"on_player_pre_heal",
+	EventDataUpdate("amount", 15)
+	.add_event_validator(AttachedPlayerValidator())
+	.add_event_validator(PropertyEquals("source", "rest"))
+)
+```
+
+**Smiling Mask** - The Merchnt's card removal service now lways costs 50 Gold.
+
+- Option 1: Commands to interact with the shop removal prices now and after each purchase
+- Option 2: Stratgey for how the shop prices are calculated.
+
+**Strawberry** - Raise your Max HP by 7
+
+```python
+Relic("Strawberry")
+.add_effect(
+	"on_player_add_relic",
+	StatModifierEffect("max_health", 7)
+	.attached_player()
+	.attached_relic()
+)
+```
+
+**The Boot** - Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
+
+```python
+Relic("The Boot")
+.add_effect(
+	"on_player_pre_take_damage"
+	EventDataUpdate("damage", MaxOp(5))
+	.add_event_validator(AttachedPlayerValidator().invert())
+	.add_event_validator(
+		PropertyEquals("source",
+			OR(
+				AttachedPlayerTargeter(),
+				AttachedPlayerRelicTargeter()
+			)
+		)
+	)
+)
+```
+
+**Tiny Chest** - Every 4th ? room is a Treasure room.
+
+- Option 1: Commaand to load the type of room
+- Option 2: Modify event that loads a room type
+
+```python
+Relic("Tiny Chest")
+.add_effect(
+	"on_player_climb_floor",
+	Counter(4,
+		CommandEffect(SetNextQuestionRoom("treasure"))
+	)
+	.attached_player()
+	.PropertyEquals("dest", "?")
+)
+
+Relic("Tiny Chest")
+.add_effect(
+	SequenceEffect(
+		EventDataUpdate("type", "treasure")
+	)
+	.add_seq(
+		"on_player_climb_floor",
+		attached_player,
+		PropertyEquals("dest", "?"),
+		repeat=4
+	)
+	.add_seq(
+		"on_pre_room_load"
+	)
+)
+```
+
+**Toy Ornithopter** - Whenever you use potion, heal 5 HP.
+
+```python
+Relic("Toy Ornithopter")
+.add_effect(
+	"on_player_pre_potion"
+	Heal(5)
+	.attachedPlayer()
+)
+```
+
+**Vajra** - At the start of each combat, gain 1 Strength
+
+_See **Bag of Marbles**_
+
+**War Paint** - Upon pick up, Upgrade 2 random Skills
+
+Again we see that more complicated targeters are required with logical combinations.
+
+```python
+Relic("War Paint")
+.add_effect(
+	"on_player_add_relic"
+	CommandEffect(UpgradeCard())
+	.add_event_validator(AttachedPlayerValidator())
+	.add_event_validator(AttachedRelicValidator())
+	.add_targeter(
+		Random(2,
+			AttachedPlayerCardsTargeter()
+			.where("type", "skill")
+			.where("upgraded", False),
+			unique=True
+		)
+	)
+)
+```
