@@ -13,7 +13,9 @@ class Effect:
         self.validators.append(validator)
         return self
 
-    def validate(self, event_data):
+    def validate_event(self, event_data):
+        if not self.validators:
+            return True
         return all([v.validate(self, event_data) for v in self.validators])
 
     def add_targeters(self, targeters):
@@ -34,7 +36,7 @@ class Effect:
         pass
 
     def update(self, event_data):
-        if self.validate(event_data):
+        if self.validate_event(event_data):
             self.activate(event_data)
 
     def activate(self, event_data):
@@ -47,8 +49,9 @@ class Effect:
 
 
 class EffectDecorator(Effect):
-    def __init__(self):
+    def __init__(self, effect):
         super().__init__()
+        self.effect = effect
 
     def on_add_to_relic(self, relic, event_name):
         super().on_add_to_relic(relic, event_name)
@@ -57,6 +60,14 @@ class EffectDecorator(Effect):
     def on_equip(self, player):
         super().on_equip(player)
         self.effect.on_equip(player)
+
+
+class EffectSubject(Subject, Effect):
+    def __init__(self):
+        super().__init__()
+        self.relic = None
+        self.validators = []
+        self.targeters = []
 
 
 class EventDataUpdate(Effect):
@@ -98,8 +109,7 @@ class Heal(Effect):
 
 class Counter(EffectDecorator, Statable):
     def __init__(self, max_count, effect):
-        super().__init__()
-        self.effect = effect
+        super().__init__(effect)
         self.stats = {
             "max_count": Stat("max_count", max_count),
             "count": Stat("count", 0),
@@ -115,8 +125,7 @@ class Counter(EffectDecorator, Statable):
 
 class NTimes(EffectDecorator):
     def __init__(self, max_count, effect):
-        super().__init__()
-        self.effect = effect
+        super().__init__(effect)
         self.max_count = max_count
         self.curr_count = 0
 
@@ -127,7 +136,7 @@ class NTimes(EffectDecorator):
             GAME_MANAGER.remove_listener(self.event_name, self.update)
 
 
-class StatModifier(Subject, Effect):
+class StatModifierEffect(EffectSubject):
     def __init__(self, stat_type, amount):
         super().__init__()
         self.stat_type = stat_type
@@ -143,32 +152,8 @@ class StatModifier(Subject, Effect):
                 target.add_stat_source(self.stat_type, self.relic)
 
     def activate(self, event_data):
-        print(
-            f"{self.relic.name} is modifying {self.stat_type} by {self.amount} on {self.relic.player.name}"
-        )
         stat_update_event_data = {"stat": self.stat_type, "amount": self.amount}
         self.trigger_event("on_stat_update", stat_update_event_data)
-
-
-"""
-Relic("Hawk Eye")
-  .add_effect(
-    "on_player_add_relic",
-    NTimes(1,
-      StatModifier("max_count", -1)
-        .add_targeter(attached_player_relics_targeter)
-    )
-      .add_validator(AttachedPlayerValidator())
-  )
-  .add_effect(
-    "on_player_add_relic",
-    StatModifier("max-count", -1)
-      .add_targeter(EventDataPropertyTargeter("relic"))
-      .add_validator(
-        PropertyEquals("relic", attached_relic_targeter).invert()
-      )
-  )
-"""
 
 
 class ChangeRelicTiming(Effect):
