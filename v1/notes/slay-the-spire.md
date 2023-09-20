@@ -1,11 +1,13 @@
 ## General
 
-Using ideas from existing code to create the relics from Slay the Spire. This will help explore  wider range of ideas to inform the future code.
+Using ideas from existing code to create the relics from Slay the Spire. This will help explore wider range of ideas to inform the future code.
 
 - Events like "on_combat_start" are realistically probably something more like "on_state_change" with a validator `EventDataValidator("state_to", "combat")`, or some ENUM value.
 - `on_player_` events will have a default validator of AttachedPlayerValidator() unless kwarg `use_defaults=False`
 
 ## Relics
+
+### Starter
 
 **Burning Blood** - At the end of combat, heal 6 HP
 
@@ -49,7 +51,7 @@ class ToggleEffect(EffectDecorator):
 
 **Cracked Core** - At the start of each combat, channel 1 Lightning orb
 
-Try to utilize the Command design pattern to encapsulate instructions within an object for some yet unspecified target. 
+Try to utilize the Command design pattern to encapsulate instructions within an object for some yet unspecified target.
 
 ```python
 Relic("Cracked Core")
@@ -70,6 +72,8 @@ Relic("Pure Water")
 	.add_targeter(AttachedPlayerTargeter())
 )
 ```
+
+### Common
 
 **Akabeko** - Your first attack each combat deals 8 additional damage
 
@@ -127,7 +131,7 @@ Relic("Art of War")
 )
 ```
 
-**Bag of Marbles** - At the start of each combaat, apply 1 Vulnerable to ALL enemies
+**Bag of Marbles** - At the start of each combat, apply 1 Vulnerable to ALL enemies
 
 ```python
 Relic("Bag of Marbles")
@@ -147,7 +151,7 @@ i.e. decrease by 1 every turn or clear after attacking
 
 Status("Vulnerable")
 .add_effect(
-	EventDataUpdate("damage", MultOp(1.25))
+	EventDataUpdate("damage", MultOp(1.5))
 	.add_event_validator("on_player_take_damage")
 )
 .add_change(
@@ -233,7 +237,7 @@ Relic("Happy Flower")
 )
 ```
 
- **Juzu Bracelet** - Regular enemy combats aare no longer encountered in ? rooms.
+**Juzu Bracelet** - Regular enemy combats are no longer encountered in ? rooms.
 
 _Requires some interaction with the game systems. See **Tiny Chest** for some ideas?_
 
@@ -284,7 +288,7 @@ Relic("Nunchaku")
 )
 ```
 
-**Oddly Smooth Stone** - Aat the start of each combat, gain 1 Dexterity
+**Oddly Smooth Stone** - At the start of each combat, gain 1 Dexterity
 
 ```python
 Relic("Oddly Smooth Stone")
@@ -498,3 +502,87 @@ Relic("War Paint")
 	)
 )
 ```
+
+**Red Skull** - While your HP is at or below 50%, you have 3 additional Strength.
+
+Seems like a toggle since it should only happnen once each way. Losing health while already below threshold doesnt give even more strength. But how to remove strength when toggles off?
+
+- Option 1: 2 separate toggle effects that act in reverse, one adds Strength one removes
+- Option 2: Optional on_enable, on_disable effects for a toggle.
+
+**Sneko Skull** - Whenever you apply Poison, apply an additional 1 Poison.
+
+**Data Disk** - Start ech combt with 1 Focus
+
+**Damaru** - At the start of your turn, gain 1 Mantra
+
+### Uncommon
+
+The ones interesting in terms of unique effects for this system.
+
+**Eternal Feather** - For every 5 cards in your deck, heal 3 HP whenever you enter a Rest site.
+
+Need a way of calculating properties on a target. Perhaps something like
+
+**Horn Cleat** - At the start of your 2nd turn, gain 14 block.
+
+Turn start sequence with repeater, reset on combat start.
+
+**Meat on the Bone** - If your HP is at or below 50% at the end of combat, heal 12 HP.
+
+Requires some calculation off of player properties in validator.
+
+**Strike Dummy** - Cards containing 'strike' deal 3 additional damage.
+
+Filtered targeter
+
+**Paper Phrog** - Enemies with Vulnerable take 75% more damage rather than 50%.
+
+Stat modifier on a status?
+
+**Self-Forming Clay** - Whenever you lose HP in combat, gain 3 Block next turn.
+
+Gaining stats next turn is a mechanic that would have a command associated with it.
+Combat HP is a toggle for combat then an effect on lose HP.
+
+**Paper Krane** - Enemies with Weak deal 40% less damage rather than 25%.
+
+_See **Paper Frog**_
+
+**Duality** - Whenever you play an Attack, gain 1 temporary Dexterity
+
+Some sort of temporary status mechanics. Perhaps a decorator.
+
+### Rare
+
+The ones interesting in terms of unique effects for this system.
+
+**Du-Vu Doll** - For each Curse in your deck, start each combat with 1 additional Strength
+
+_See **Eternal Feather**_
+
+**Ginger** - You can no longer become Weakened.
+
+Cancel out some sort of on_add_status event
+
+**Pocketwatch** - Whenever you ply 3 or less cards during your turn, draw 3 additional cards at the start of your next turn.
+
+Indeterminate number of events for a sequence.
+
+**Unceasing Top** - Whenever you have no cards in hand during your turn, draw a card.
+
+Is there an event for this? Perhaps a post play card event that triggers after everything is worked out.
+
+**The Specimen** - Whenever an enemy dies, transfer any Poison it has to a random enemy.
+
+**Tingsha** - Whenever you discard a card during your turn, deal 3 damage to a random enemy for each card discarded.
+
+Im reading this as the first discard is 3, the second is 3 + 3, etc. so there needs to be a way of counting events and accessing that value.
+
+In the wiki there is a patch for changing the target of the damage if the current target dies while taking damage.
+
+### Shop
+
+### Boss
+
+### Event
