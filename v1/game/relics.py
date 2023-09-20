@@ -25,23 +25,23 @@ class Relic(Statable):
             effect.on_equip(player)
 
 
-relic_hawk_eye = Relic("Hawk Eye").add_effect(
-    "on_player_add_relic",
-    ChangeRelicTiming(-1).add_event_validator(AttachedPlayerValidator().invert()),
-)
+# relic_hawk_eye = Relic("Hawk Eye").add_effect(
+#     "on_player_add_relic",
+#     ChangeRelicTiming(-1).add_event_validator(AttachedPlayerValidator().invert()),
+# )
 
-relic_lion_heart = (
-    Relic("Lion Heart")
-    .add_effect(
-        "on_player_add_relic",
-        NTimes(1, StatModifier("max_health", 10))
-        .add_targeters(attached_player_targeter)
-        .add_event_validator(AttachedPlayerValidator()),
-    )
-    .add_effect(
-        "on_player_add_relic",
-        NTimes(1, StatModifier("health", 5))
-        .add_targeters(attached_player_targeter)
-        .add_event_validator(AttachedPlayerValidator()),
-    )
-)
+# relic_lion_heart = (
+#     Relic("Lion Heart")
+#     .add_effect(
+#         "on_player_add_relic",
+#         NTimes(1, StatModifier("max_health", 10))
+#         .add_targeters(attached_player_targeter)
+#         .add_event_validator(AttachedPlayerValidator()),
+#     )
+#     .add_effect(
+#         "on_player_add_relic",
+#         NTimes(1, StatModifier("health", 5))
+#         .add_targeters(attached_player_targeter)
+#         .add_event_validator(AttachedPlayerValidator()),
+#     )
+# )
