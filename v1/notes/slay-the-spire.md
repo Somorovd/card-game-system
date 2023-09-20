@@ -1,15 +1,9 @@
 ## General
 
+Using ideas from existing code to create the relics from Slay the Spire. This will help explore  wider range of ideas to inform the future code.
+
 - Events like "on_combat_start" are realistically probably something more like "on_state_change" with a validator `EventDataValidator("state_to", "combat")`, or some ENUM value.
-  - There will probably be some sort of "upkeep" step where things can happen after the game properly sets things up but before play starts.
-  - `on_player_` events will have a default validator of AttachedPlayerValidator() unless kwarg `use_defaults=False`
-
-## New Terms
-
-- [ ] ToggleEffect
-- [ ] SequenceEffect
-- [ ] CommandEffect
-- [ ] Status / AddStatus
+- `on_player_` events will have a default validator of AttachedPlayerValidator() unless kwarg `use_defaults=False`
 
 ## Relics
 
