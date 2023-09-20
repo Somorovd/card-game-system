@@ -49,7 +49,7 @@ class ToggleEffect(EffectDecorator):
 
 **Cracked Core** - At the start of each combat, channel 1 Lightning orb
 
-_See **Bronze Scales** for first thougts on CommandEffect_
+Try to utilize the Command design pattern to encapsulate instructions within an object for some yet unspecified target. 
 
 ```python
 Relic("Cracked Core")
@@ -101,20 +101,6 @@ Relic("Anchor")
 ```python
 Relic("Ancient Tea Set")
 .add_effect(
-	SequenceEffect(
-		StatUpdate("energy", 2)
-		.add_targeter(AttachedPlayerTargeter())
-	)
-	.add_seq("on_player_enter_rest_site")
-	.add_seq("on_combat_start")
-)
-```
-
-or instead if Sequence is an event validator - Not necessarily reflected in all the following exmples
-
-```python
-Relic("Ancient Tea Set")
-.add_effect(
 	StatUpdate("energy", 2)
 	.add_event_validator(
 		SequenceValidator()
@@ -130,17 +116,18 @@ Relic("Ancient Tea Set")
 ```python
 Relic("Art of War")
 .add_effect(
-	SequenceEffect(
-		StatUpdate("energy", 1)
-		.add_targeter(AttachedPlayerTargeter())
+	StatUpdate("energy", 1)
+	.add_event_validator(
+		SequenceValidator()
+		.add_seq("on_player_start_turn")
+		.add_seq("on_player_end_turn")
+		.add_reset("on_player_play_card", PropertyEquals("type", "attack"))
 	)
-	.add_seq("on_player_start_turn")
-	.add_seq("on_player_end_turn")
-	.add_reset("on_player_play_card", PropertyEquals("type", "attack"))
+	.add_targeter(AttachedPlayerTargeter())
 )
 ```
 
-**Bag of Marbles** - At the start of each combaat, apply 1 💔 Vulnerable to ALL enemies
+**Bag of Marbles** - At the start of each combaat, apply 1 Vulnerable to ALL enemies
 
 ```python
 Relic("Bag of Marbles")
@@ -463,7 +450,7 @@ Relic("Tiny Chest")
 .add_effect(
 	EventDataUpdate("type", "treasure")
 	.add_event_validator(
-		SequenceEffect()
+		SequenceValidator()
 		.add_seq(
 			"on_player_climb_floor",
 			PropertyEquals("dest", "?"),
