@@ -233,9 +233,9 @@ Relic("Happy Flower")
 )
 ```
 
-_SKIP_ **Juzu Bracelet** - Regular enemy combats aare no longer encountered in ? rooms.
+ **Juzu Bracelet** - Regular enemy combats aare no longer encountered in ? rooms.
 
-_Requires some interaction with the game systems. Makes more sense for a single player game_
+_Requires some interaction with the game systems. See **Tiny Chest** for some ideas?_
 
 **Lantern** - Gain 1 Energy on the first turn of each combat.
 
