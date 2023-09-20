@@ -2,6 +2,7 @@
 
 - Events like "on_combat_start" are realistically probably something more like "on_state_change" with a validator `EventDataValidator("state_to", "combat")`, or some ENUM value.
   - There will probably be some sort of "upkeep" step where things can happen after the game properly sets things up but before play starts.
+  - `on_player_` events will have a default validator of AttachedPlayerValidator() unless kwarg `use_defaults=False`
 
 ## New Terms
 
@@ -17,8 +18,8 @@
 ```python
 Relic("Burning Blood")
 .add_effect(
-	"on_combat_end",
 	StatUpdate("health", 6)
+	.add_event_validator("on_combat_end")
 )
 .add_targeter(AttachedPlayerTargeter())
 ```
@@ -33,13 +34,12 @@ _ALT: The first time you draw cards each combat, draw 2 additional cards._
 ```python
 Relic("Ring of the Snake")
 .add_effect(
-	"on_player_pre_draw_cards",
 	ToggleEffect(
 		EventDataUpdate("number_cards", 2)
-		.add_event_validator(AttachedPlayerValidator())
+		.add_event_validator("on_player_pre_draw_cards")
 	)
 	.add_toggle_on("on_combat_start")
-	.add_toggle_off("on_player_post_draw_cards", AttachedPlayerValidator())
+	.add_toggle_off("on_player_post_draw_cards")
 )
 ```
 
@@ -60,8 +60,8 @@ _See **Bronze Scales** for first thougts on CommandEffect_
 ```python
 Relic("Cracked Core")
 .add_effect(
-	"on_combat_start",
 	CommandEffect(PlayerChannel(1, "lightning"))
+	.add_event_validator("on_combat_start")
 	.add_targeter(AttachedPlayerTargeter())
 )
 ```
@@ -71,8 +71,8 @@ Relic("Cracked Core")
 ```python
 Relic("Pure Water")
 .add_effect(
-	"on_combat_start",
 	CommandEffect(PlayerAddToHand(1, CardMiracle()))
+	.add_event_validator("on_combat_start")
 	.add_targeter(AttachedPlayerTargeter())
 )
 ```
@@ -82,13 +82,12 @@ Relic("Pure Water")
 ```python
 Relic("Akabako")
 .add_effect(
-	"on_player_pre_attack",
 	ToggleEffect(
 		EventDataUpdate("damage", 8)
-		.add_validator(AttachedPlayerValidator())
+		.add_event_validator("on_player_pre_attack")
 	)
 	.add_toggle_on("on_combat_start")
-	.add_toggle_off("on_player_post_attack", AttachedPlayerValidator())
+	.add_toggle_off("on_player_post_attack")
 )
 ```
 
@@ -97,8 +96,8 @@ Relic("Akabako")
 ```python
 Relic("Anchor")
 .add_effect(
-	"on_combat_start",
 	StatUpdate("block", 10)
+	.add_event_validator(	"on_combat_start")
 	.add_targeter(AttachedPlayerTargeter())
 )
 ```
@@ -108,24 +107,27 @@ Relic("Anchor")
 ```python
 Relic("Ancient Tea Set")
 .add_effect(
-	"on_player_enter_rest_site",
-	StatUpdate("energy", 2)
-	.add_targeter(AttachedPlayerTargeter())
-)
-
-# The sequence is interesting but may require a significaat rework
-# Technically everything else is also a sequence of length 1
-# There is no event to pass in to add_effect
-# I do like the idea of adding events to the effects
-Relic("Ancient Tea Set")
-.add_effect(
-	"",
 	SequenceEffect(
 		StatUpdate("energy", 2)
 		.add_targeter(AttachedPlayerTargeter())
 	)
 	.add_seq("on_player_enter_rest_site")
 	.add_seq("on_combat_start")
+)
+```
+
+or instead if Sequence is an event validator - Not necessarily reflected in all the following exmples
+
+```python
+Relic("Ancient Tea Set")
+.add_effect(
+	StatUpdate("energy", 2)
+	.add_event_validator(
+		SequenceValidator()
+			.add_seq("on_player_enter_rest_site")
+			.add_seq("on_combat_start")
+	)
+	.add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -149,8 +151,8 @@ Relic("Art of War")
 ```python
 Relic("Bag of Marbles")
 .add_effect(
-	"on_combat_start",
 	AddStatus(Vulnerable, 1)
+	.add_event_validator("on_combat_start")
 	.add_targeter(AttachedPlayerEnemiesTargeter())
 )
 
@@ -158,17 +160,18 @@ Relic("Bag of Marbles")
 The status class needs to encapsulate the idea of temporary
 effects on a player that can change in intensity over time,
 i.e. decrease by 1 every turn or clear after attacking
+
+.add_change automatically targets itself
 '''
 
 Status("Vulnerable")
 .add_effect(
-	"on_player_take_damage",
 	EventDataUpdate("damage", MultOp(1.25))
+	.add_event_validator("on_player_take_damage")
 )
 .add_change(
-	"on_player_end_turn",
-	AddOp(-1),
-	AttachedPlayerValidator()
+	StatUpdate("amount", -1)
+	.add_event_validator("on_player_end_turn")
 )
 ```
 
@@ -188,14 +191,13 @@ This relic requires a way of invoking a method on the target.
 COMMANAD PATTERN?
 
 ```python
-Relic("Burning Blood")
+Relic("Bronze Scales")
 .add_effect(
-	"on_player_post_attack",
-	CommandEffect(
-		PlayerTakeDamage(self, 3) # source, amount
-	)
+	CommandEffect(PlayerTakeDamage(self, 3)) # source, amount
 	.add_event_validator(
+		"on_player_post_attack",
 		PropertyEquals("target", AttachedPlayerTargeter())
+		use_defaults=False
 	)
 	.add_targeter(EventDataTargeter("player"))
 )
@@ -206,10 +208,9 @@ Relic("Burning Blood")
 ```python
 Relic("Centennial Puzzle")
 .add_effect(
-	"on_player_post_take_damage"
 	ToggleEffect(
 		CommandEffect(PlayerDrawCards(3))
-		.add_event_validator(AttachedPlayerValidator())
+		.add_event_validator("on_player_post_take_damage")
 	)
 	.add_toggle_on("on_combat_start")
 	.add_toggle_off(
@@ -223,10 +224,9 @@ Relic("Centennial Puzzle")
 ```python
 Relic("Ceramic Fish")
 .add_effect(
-	"on_player_add_card",
 	StatUpdate("gold", 9)
+	.add_event_validator("on_player_add_card")
 	.add_targeter(AttachedPlayerTargeter())
-	.add_event_validator(AttachedPlayerValidator())
 )
 ```
 
@@ -235,10 +235,9 @@ Relic("Ceramic Fish")
 ```python
 Relic("Dream Catcher")
 .add_effect(
-	"on_player_rest",
 	CommandEffect(PlayerAddCard(1))
+	.add_event_validator("on_player_rest")
 	.add_targeter(AttachedPlayerTargeter())
-	.add_event_validator(AttachedPlayerValidator())
 )
 ```
 
@@ -247,20 +246,10 @@ Relic("Dream Catcher")
 ```python
 Relic("Happy Flower")
 .add_effect(
-	"on_player_turn_start"
 	Counter(3, StatUpdate("energy", 1))
-	.attached_player()
+	.add_event_validator("on_player_turn_start")
+	.add_targeter(AttachedPlayerTargeter())
 )
-
-'''
-.attached_player()
-
-shorthand for
-
-.add_targeter(AttachedPlayerTargeter())
-.add_event_validator(AttachedPlayerValidator())
-
-'''
 ```
 
 _SKIP_ **Juzu Bracelet** - Regular enemy combats aare no longer encountered in ? rooms.
@@ -277,9 +266,9 @@ _See **Ancient Tea Set**_
 Relic("Maw Bank")
 .add_effect(
 	ToggleEffect(
-		"on_player_climb_floor",
 		StatUpdate("gold", 12)
-		.attached_player()
+		.add_event_validator("on_player_climb_floor")
+		.add_targeter(AttachedPlayerTargeter())
 	)
 	.set_toggle(True)
 	.add_toggle_off("on_player_shop_purchase")
@@ -291,10 +280,12 @@ Relic("Maw Bank")
 ```python
 Relic("Meal Ticket")
 .add_effect(
-	"on_player_climb_floor",
 	Heal(15)
-	.attached_player()
-	.add_event_validator(PropertyEquals("dest", "shop"))
+	.add_event_validator(
+		"on_player_climb_floor",
+		PropertyEquals("dest", "shop")
+	)
+	.add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -303,10 +294,12 @@ Relic("Meal Ticket")
 ```python
 Relic("Nunchaku")
 .add_effect(
-	"on_player_play_card"
 	Counter(10, StatUpdate("energy", 1))
-	.attached_player()
-	.add_event_validator(PropertyEquals("type", "attack"))
+	.add_event_validator(
+		"on_player_play_card",
+		PropertyEquals("type", "attack")
+	)
+	.add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -315,9 +308,9 @@ Relic("Nunchaku")
 ```python
 Relic("Oddly Smooth Stone")
 .add_effect(
-	"on_combat_start",
 	AddStatus(Dexterity, 1)
-	.attached_player()
+	.add_event_validator("on_combat_start")
+	.add_targeter(AttachedPlayerTargeter())
 )
 
 '''
@@ -325,8 +318,8 @@ Need a way of referencing a status's current value
 '''
 Status("Dexterity")
 .add_effect(
-	"on_player_gain_block"
 	EventDataUpdate("block", AddOp(AttachedStatusValue()))
+	.add_event_validator("on_player_pre_gain_block")
 )
 ```
 
@@ -337,10 +330,10 @@ _I set card to None in the event, but there may be a better way to not interfere
 ```python
 Relic("Omamori")
 .add_effect(
-	"on_player_add_card"
-	NTimes(2,
-		EventDataUpdate("card", None)
-		.add_event_validator(PropertyEquals("type", "curse"))
+	NTimes(2, EventDataUpdate("card", None))
+	.add_event_validator(
+		"on_player_add_card",
+		PropertyEquals("type", "curse")
 	)
 )
 ```
@@ -350,15 +343,18 @@ Relic("Omamori")
 ```python
 Relic("Orichalcum")
 .add_effect(
-	"on_player_end_turn",
 	StatUpdate("block", 6)
-	.add_event_validator() # <------
+	.add_event_validator(
+		SequenceValidator()
+		.add_seq("on_player_turn_start")
+		.add_seq("on_player_turn_end")
+		.add_reset(
+			"on_player_post_gain_block"
+			PropertyInRange("block", min=1)
+		)
+	)
+	.add_targeter(AttachedPlayerTargeter())
 )
-
-'''
-Need a way of validating using the attached players stats.
-Probbly using the player data in the event
-'''
 ```
 
 **Pen Nib** - Every 10th Attck you play deals double damage.
@@ -370,12 +366,12 @@ _See **Nunchaku**_
 ```python
 Relic("Potion Belt")
 .add_effect(
-	"on_player_add_relic"
 	NTimes(1, StatUpgrade("potion_slots", 2))
-	.attached_player()
 	.add_event_validator(
+		"on_player_add_relic",
 		PropertyEquals("relic", AttachedRelicTargetter())
 	)
+	.add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -384,15 +380,16 @@ Relic("Potion Belt")
 ```python
 Relice("Preserved Insect")
 .add_effect(
-	SequenceEffect(
-		StatUpdate("health", MultOp(0.75))
-		.add_targeter(AttachedPlayerEnemyTargeter())
+	StatUpdate("health", MultOp(0.75))
+	.add_event_validator(
+		SequenceValidator()
+		.add_seq(
+			"on_player_climb_floor",
+			PropertyEquals("dest", "elite")
+		)
+		.add_seq("on_combat_start")
 	)
-	.add_seq(
-		"on_player_climb_floor",
-		PropertyEquals("dest", "elite")
-	)
-	.add_seq("on_combat_start")
+	.add_targeter(AttachedPlayerEnemyTargeter()) #  <-- ?
 )
 ```
 
@@ -403,14 +400,15 @@ _ALT: Healing from Resting is increased by 15_
 ```python
 Relic("Regal Pillow")
 .add_effect(
-	"on_player_pre_heal",
 	EventDataUpdate("amount", 15)
-	.add_event_validator(AttachedPlayerValidator())
-	.add_event_validator(PropertyEquals("source", "rest"))
+	.add_event_validator(
+		"on_player_pre_heal",
+		PropertyEquals("source", "rest") # <-- ?
+	)
 )
 ```
 
-**Smiling Mask** - The Merchnt's card removal service now lways costs 50 Gold.
+**Smiling Mask** - The Merchant's card removal service now always costs 50 Gold.
 
 - Option 1: Commands to interact with the shop removal prices now and after each purchase
 - Option 2: Stratgey for how the shop prices are calculated.
@@ -420,61 +418,64 @@ Relic("Regal Pillow")
 ```python
 Relic("Strawberry")
 .add_effect(
-	"on_player_add_relic",
-	StatModifierEffect("max_health", 7)
-	.attached_player()
-	.attached_relic()
+	NTimes(1, StatModifierEffect("max_health", 7))
+	.add_event_validator(
+		"on_player_add_relic",
+		AttachedRelicValidator()
+	)
+	.add_targeter(AttachedPlayerTargeter())
 )
 ```
 
 **The Boot** - Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
 
+Raises the question of how best to define logical combinations of validators.
+Here I assume that all validators passed in to `.add_event_validator` must result in True to apply the effect. The `Or()` validator would return True if at least one of its validators is True.
+
+What about effects that trigger off of multiple events??
+
 ```python
 Relic("The Boot")
 .add_effect(
-	"on_player_pre_take_damage"
 	EventDataUpdate("damage", MaxOp(5))
-	.add_event_validator(AttachedPlayerValidator().invert())
 	.add_event_validator(
-		PropertyEquals("source",
-			OR(
-				AttachedPlayerTargeter(),
-				AttachedPlayerRelicTargeter()
-			)
+		"on_player_pre_take_damage",
+		AttachedPlayerValidator().invert(),
+		Or(
+			PropertyEquals("source", AttachedPlayerTargeter()),
+			PropertyEquals("source", AttachedPlayerRelicTargeter()),
 		)
+		use_default=False
 	)
 )
 ```
 
 **Tiny Chest** - Every 4th ? room is a Treasure room.
 
-- Option 1: Commaand to load the type of room
+- Option 1: Command to load the type of room
 - Option 2: Modify event that loads a room type
 
 ```python
 Relic("Tiny Chest")
 .add_effect(
-	"on_player_climb_floor",
-	Counter(4,
-		CommandEffect(SetNextQuestionRoom("treasure"))
+	Counter(4, CommandEffect(SetNextQuestionRoom("treasure")))
+	.add_event_validator(
+		"on_player_climb_floor",
+		PropertyEquals("dest", "?")
 	)
-	.attached_player()
-	.PropertyEquals("dest", "?")
 )
 
 Relic("Tiny Chest")
 .add_effect(
-	SequenceEffect(
-		EventDataUpdate("type", "treasure")
-	)
-	.add_seq(
-		"on_player_climb_floor",
-		attached_player,
-		PropertyEquals("dest", "?"),
-		repeat=4
-	)
-	.add_seq(
-		"on_pre_room_load"
+	EventDataUpdate("type", "treasure")
+	.add_event_validator(
+		SequenceEffect()
+		.add_seq(
+			"on_player_climb_floor",
+			PropertyEquals("dest", "?"),
+			repeat=4
+		)
+		.add_seq("on_pre_room_load")
 	)
 )
 ```
@@ -484,9 +485,8 @@ Relic("Tiny Chest")
 ```python
 Relic("Toy Ornithopter")
 .add_effect(
-	"on_player_pre_potion"
 	Heal(5)
-	.attachedPlayer()
+	.add_event_validator("on_player_pre_potion")
 )
 ```
 
@@ -497,14 +497,16 @@ _See **Bag of Marbles**_
 **War Paint** - Upon pick up, Upgrade 2 random Skills
 
 Again we see that more complicated targeters are required with logical combinations.
+Not satisfied with this but will hve to see more examples.
 
 ```python
 Relic("War Paint")
 .add_effect(
-	"on_player_add_relic"
 	CommandEffect(UpgradeCard())
-	.add_event_validator(AttachedPlayerValidator())
-	.add_event_validator(AttachedRelicValidator())
+	.add_event_validator(
+		"on_player_add_relic",
+		AttachedRelicValidator()
+	)
 	.add_targeter(
 		Random(2,
 			AttachedPlayerCardsTargeter()
