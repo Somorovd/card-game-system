@@ -6,8 +6,8 @@ class Validator(ABC):
     def __init__(self):
         self.inverted = False
 
-    def validate(self, effect, event_data):
-        res = self._eval(effect, event_data)
+    def validate(self, event_data):
+        res = self._eval(event_data)
         return res if not self.inverted else not res
 
     def invert(self):
@@ -15,27 +15,27 @@ class Validator(ABC):
         return self
 
     @abstractmethod
-    def _eval(self, effect, event_data):
+    def _eval(self, event_data):
         pass
 
 
-class AttachedPlayerValidator(Validator):
-    def _eval(self, effect, event_data):
-        return event_data["player"] == effect.relic.player
+# class AttachedPlayerValidator(Validator):
+#     def _eval(self, effect, event_data):
+#         return event_data["player"] == effect.relic.player
 
 
-class PropertyInRange(Validator):
-    def __init__(self, property, min=-float("inf"), max=float("inf")):
-        super().__init__()
-        self.property = property
-        self.min = min
-        self.max = max
+# class PropertyInRange(Validator):
+#     def __init__(self, property, min=-float("inf"), max=float("inf")):
+#         super().__init__()
+#         self.property = property
+#         self.min = min
+#         self.max = max
 
-    def _eval(self, effect, event_data):
-        return (
-            event_data[self.property] > self.min
-            and event_data[self.property] < self.max
-        )
+#     def _eval(self, effect, event_data):
+#         return (
+#             event_data[self.property] > self.min
+#             and event_data[self.property] < self.max
+#         )
 
 
 class PropertyEquals(Validator):
@@ -44,8 +44,8 @@ class PropertyEquals(Validator):
         self.property = property
         self.value = value
 
-    def _eval(self, effect, event_data):
+    def _eval(self, event_data):
         value = self.value
-        if isinstance(value, Targeter):
-            value = value.get_targets(effect, event_data)
+        # if isinstance(value, Targeter):
+        #     value = value.get_targets(effect, event_data)
         return event_data[self.property] == value
