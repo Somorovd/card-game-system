@@ -21,7 +21,7 @@ def test_validator_inverted():
     assert res == False
 
 
-def test_validator_event_property_equals():
+def test_validator_property_equals():
     val_one_validator = PropertyEquals("val", 1)
     not_x_ten_validator = PropertyEquals("x", 10).invert()
 
@@ -31,8 +31,12 @@ def test_validator_event_property_equals():
     assert res1 == True
     assert res2 == False
 
-    event_data1 = {"val": 3, "x": 12}
-    res1 = val_one_validator.validate(event_data1)
-    res2 = not_x_ten_validator.validate(event_data1)
+    event_data2 = {"val": 3, "x": 12}
+    res1 = val_one_validator.validate(event_data2)
+    res2 = not_x_ten_validator.validate(event_data2)
     assert res1 == False
     assert res2 == True
+
+    y_ten_validator = PropertyEquals("y", 10)
+    res3 = y_ten_validator.validate(event_data2)
+    assert res3 == False

@@ -48,4 +48,4 @@ class PropertyEquals(Validator):
         value = self.value
         # if isinstance(value, Targeter):
         #     value = value.get_targets(effect, event_data)
-        return event_data[self.property] == value
+        return event_data.get(self.property) == value
