@@ -1,11 +1,13 @@
 import pytest
 from game import *
 
+
 @pytest.fixture(autouse=True)
 def game_manager():
-    game_manager = GameManager();
+    game_manager = GameManager()
     GameManager.set_global_manager(game_manager)
     return game_manager
+
 
 @pytest.fixture
 def players():

@@ -2,13 +2,13 @@ from test import *
 
 
 @pytest.fixture
-def test_effect():
+def test_effect(game_manager):
     class TestEffect(Effect):
         def activate(self, event_data, *target):
             target = target[0] if target else event_data["object"]
             target.val = event_data["val"]
 
-    return TestEffect()
+    return TestEffect(game_manager=game_manager)
 
 
 @pytest.fixture
@@ -97,6 +97,27 @@ def test_effect_apply_to_target(test_effect, test_object):
     event_data = {"val": 30}
     test_effect.add_targeter(targeter1)
     test_effect.activate_on_targets(event_data)
+    assert test_object.val == 30
+
+
+def test_triggers_off_events(game_manager, test_effect, test_object):
+    class ObjectTargeter:
+        def get_targets(self, event_data):
+            return [test_object]
+
+    targeter1 = ObjectTargeter()
+    event_name = "event1"
+    event_data = {"val": 30}
+    test_effect.set_event_validator(event_name).add_targeter(targeter1)
+    assert test_effect._is_listening == False
+
+    test_effect.set_listening(True)
+    assert test_effect._is_listening == True
+    assert len(game_manager._listeners) == 1
+    assert event_name in game_manager._listeners
+    assert game_manager._listeners[event_name][0] == test_effect.update
+
+    game_manager.trigger_event(event_name, event_data)
     assert test_object.val == 30
 
 

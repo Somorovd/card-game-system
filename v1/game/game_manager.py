@@ -26,7 +26,7 @@ class Subject:
             return
 
         for listener in self._listeners[event_name]:
-            listener(event_data)
+            listener(event_name, event_data)
         self._is_notifying = False
         self._clear_remove_backup()
 

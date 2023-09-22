@@ -4,11 +4,12 @@ from .targeters import *
 
 
 class Effect:
-    def __init__(self):
+    def __init__(self, game_manager=GAME_MANAGER):
         # self.relic = None
         self._event_validators = {}
         self._targeters = []
-        # self._is_listening = False
+        self._is_listening = False
+        self.game_manager = game_manager
 
     def set_event_validator(self, event_name, *validators):
         self._event_validators[event_name] = validators
@@ -24,15 +25,15 @@ class Effect:
             targets.extend(targeter.get_targets(event_data))
         return targets
 
-    # def set_listening(self, is_listening):
-    #     if self._is_listening == is_listening:
-    #         return
-    #     self._is_listening = is_listening
-    #     for event_name in self._event_validators:
-    #         if self._is_listening:
-    #             GAME_MANAGER.add_listener(event_name, self.update)
-    #         else:
-    #             GAME_MANAGER.remove_listener(event_name, self.update)
+    def set_listening(self, should_listen):
+        if self._is_listening == should_listen:
+            return
+        self._is_listening = should_listen
+        for event_name in self._event_validators:
+            if self._is_listening:
+                self.game_manager.add_listener(event_name, self.update)
+            else:
+                self.game_manager.remove_listener(event_name, self.update)
 
     def update(self, event_name, event_data):
         if self.validate_event(event_name, event_data):
