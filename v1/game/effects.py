@@ -61,27 +61,6 @@ class Effect:
     #     pass
 
 
-class Sequence(Effect):
-    def __init__(self, effect, game_manager=GAME_MANAGER):
-        self.effect = effect
-        self._events = []
-        self.pos = 0
-        self.game_manager = game_manager
-
-    def __len__(self):
-        return len(self._events)
-
-    def add_seq(self, event_name, *validators):
-        self._events.append((event_name, validators))
-        return self
-
-    def add_reset(self, event_name, *validators):
-        return self
-
-    def add_targeter(self, targeter):
-        raise TypeError("Cannot assign targeters to a Sequence")
-
-
 # class EffectDecorator(Effect):
 #     def __init__(self, effect):
 #         super().__init__()

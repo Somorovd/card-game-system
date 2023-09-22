@@ -1,7 +1,19 @@
 from test import *
 
 
-def test_event_trigger(game_manager):
+@pytest.fixture()
+def trigger_parent():
+    class TriggerParent:
+        def __init__(self):
+            self.val = 0
+
+        def update(self, event_data, trigger=None):
+            self.val += event_data["val"]
+
+    return TriggerParent()
+
+
+def test_event_trigger(game_manager, trigger_parent):
     event_name = "event1"
     validator = PropertyEquals("x", 12)
     trigger = EventTrigger(event_name, validator, game_manager=game_manager)
@@ -16,20 +28,93 @@ def test_event_trigger(game_manager):
     assert res1 == False
     assert res2 == True
 
-    class TriggerParent:
-        def __init__(self):
-            self.val = 0
-
-        def update(self, event_data):
-            self.val += event_data["val"]
-
-    parent = TriggerParent()
-    trigger.set_parent(parent)
-    assert trigger._parent == parent
+    trigger.set_parent(trigger_parent)
+    assert trigger._parent == trigger_parent
 
     trigger.arm()
     assert len(game_manager._listeners) == 1
     assert event_name in game_manager._listeners
 
     game_manager.trigger_event(event_name, event_data2)
-    assert parent.val == 6
+    assert trigger_parent.val == 6
+
+
+def test_sequence_trigger(game_manager, trigger_parent):
+    event_name1 = "event1"
+    event_name2 = "event2"
+    reset_event = "reset"
+    trigger1 = EventTrigger(event_name1, game_manager=game_manager)
+    trigger2 = EventTrigger(event_name2, game_manager=game_manager)
+    reset_trigger = EventTrigger(reset_event, game_manager=game_manager)
+
+    sequence = Sequence()
+    assert len(sequence._triggers) == 0
+    assert sequence._pos == 0
+    assert sequence._is_armed == False
+
+    sequence.set_parent(trigger_parent)
+    assert sequence._parent == trigger_parent
+
+    sequence.add_seq(trigger1)
+    assert len(sequence._triggers) == 1
+    assert sequence._triggers[0] == trigger1
+    assert sequence._pos == 0
+    assert trigger1._is_armed == False
+    assert trigger1._parent == sequence
+
+    sequence.add_seq(trigger2)
+    assert len(sequence._triggers) == 2
+    assert sequence._triggers[0] == trigger1
+    assert sequence._triggers[1] == trigger2
+    assert sequence._pos == 0
+    assert trigger1._is_armed == False
+    assert trigger2._is_armed == False
+    assert trigger2._parent == sequence
+
+    sequence.add_reset(reset_trigger)
+    assert len(sequence._triggers) == 2
+    assert sequence._reset == reset_trigger
+    assert trigger1._is_armed == False
+    assert trigger2._is_armed == False
+    assert reset_trigger._is_armed == False
+    assert reset_trigger._parent == sequence
+
+    sequence.arm()
+    assert sequence._is_armed == True
+    assert sequence._triggers[0]._is_armed == True
+    assert sequence._triggers[1]._is_armed == False
+    assert sequence._reset._is_armed == True
+
+    game_manager.trigger_event(event_name1, {})
+    assert sequence._pos == 1
+    assert sequence._triggers[0]._is_armed == False
+    assert sequence._triggers[1]._is_armed == True
+
+    game_manager.trigger_event(event_name2, {"val": 14})
+    assert sequence._pos == 0
+    assert sequence._triggers[0]._is_armed == True
+    assert sequence._triggers[1]._is_armed == False
+    assert trigger_parent.val == 14
+
+    trigger3 = EventTrigger(event_name1, game_manager=game_manager)
+    trigger4 = EventTrigger(event_name2, game_manager=game_manager)
+    sequence.add_seq(trigger3).add_seq(trigger4)
+    assert len(sequence._triggers) == 4
+
+    game_manager.trigger_event(event_name1, {})
+    game_manager.trigger_event(event_name2, {})
+    assert sequence._pos == 2
+    assert sequence._triggers[2]._is_armed == True
+
+    game_manager.trigger_event(reset_event, {})
+    assert sequence._pos == 0
+    assert sequence._triggers[0]._is_armed == True
+
+    sequence.disarm()
+    assert sequence._is_armed == False
+    assert all([t._is_armed == False for t in sequence._triggers]) == True
+    assert sequence._reset._is_armed == False
+
+    game_manager.trigger_event(event_name1, {})
+    assert sequence._pos == 0
+    assert all([t._is_armed == False for t in sequence._triggers]) == True
