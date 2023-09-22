@@ -1,18 +1,24 @@
 from .game_manager import GAME_MANAGER, Subject
 from .statable import Statable, Stat
 from .targeters import *
+from .triggers import Trigger, EventTrigger
 
 
 class Effect:
     def __init__(self, game_manager=GAME_MANAGER):
         # self.relic = None
-        self._event_validators = {}
+        self._trigger = None
         self._targeters = []
-        self._is_listening = False
-        self.game_manager = game_manager
+        self._game_manager = game_manager
 
-    def set_event_validator(self, event_name, *validators):
-        self._event_validators[event_name] = validators
+    def set_trigger(self, trigger, *validators):
+        if isinstance(trigger, str):
+            self._trigger = EventTrigger(
+                trigger, *validators, game_manager=self._game_manager
+            )
+        else:
+            self._trigger = trigger
+        self._trigger.set_parent(self)
         return self
 
     def add_targeter(self, targeter):
@@ -25,28 +31,17 @@ class Effect:
             targets.extend(targeter.get_targets(event_data))
         return targets
 
-    def set_listening(self, should_listen):
-        if self._is_listening == should_listen:
-            return
-        self._is_listening = should_listen
-        for event_name in self._event_validators:
-            if self._is_listening:
-                self.game_manager.add_listener(event_name, self.update)
-            else:
-                self.game_manager.remove_listener(event_name, self.update)
+    def arm_trigger(self, should_arm):
+        if should_arm:
+            self._trigger.arm()
+        else:
+            self._trigger.disarm()
 
-    def update(self, event_name, event_data):
-        if self.validate_event(event_name, event_data):
-            if self._targeters:
-                self.activate_on_targets(event_data)
-            else:
-                self.activate(event_data)
-
-    def validate_event(self, event_name, event_data):
-        validators = self._event_validators.get(event_name)
-        if not validators:
-            return True
-        return all([v.validate(event_data) for v in validators])
+    def update(self, event_data):
+        if self._targeters:
+            self.activate_on_targets(event_data)
+        else:
+            self.activate(event_data)
 
     def activate_on_targets(self, event_data):
         for target in self.get_targets(event_data):
@@ -64,6 +59,27 @@ class Effect:
 
     # def on_unequip(self, player):
     #     pass
+
+
+class Sequence(Effect):
+    def __init__(self, effect, game_manager=GAME_MANAGER):
+        self.effect = effect
+        self._events = []
+        self.pos = 0
+        self.game_manager = game_manager
+
+    def __len__(self):
+        return len(self._events)
+
+    def add_seq(self, event_name, *validators):
+        self._events.append((event_name, validators))
+        return self
+
+    def add_reset(self, event_name, *validators):
+        return self
+
+    def add_targeter(self, targeter):
+        raise TypeError("Cannot assign targeters to a Sequence")
 
 
 # class EffectDecorator(Effect):

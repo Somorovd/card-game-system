@@ -26,40 +26,33 @@ def test_effect_activate_no_validators(test_effect, test_object):
     assert test_object.val == 10
 
 
-def test_effect_add_validators(test_effect):
+def test_effect_set_trigger(test_effect):
     event_name1 = "test1"
     validator1 = PropertyEquals("x", 2)
-    test_effect.set_event_validator(event_name1, validator1)
-    assert len(test_effect._event_validators) == 1
-    assert event_name1 in test_effect._event_validators
-    assert len(test_effect._event_validators[event_name1]) == 1
-    assert test_effect._event_validators[event_name1][0] == validator1
+    test_effect.set_trigger(event_name1, validator1)
+    assert test_effect._trigger._event_name == event_name1
+    assert test_effect._trigger._validators[0] == validator1
 
-    event_name2 = "test2"
-    test_effect.set_event_validator(event_name2, validator1)
-    assert event_name1 in test_effect._event_validators
-    assert event_name2 in test_effect._event_validators
-
-    validator2 = PropertyEquals("y", 4)
-    validator3 = PropertyEquals("z", 14)
-    test_effect.set_event_validator(event_name1, validator2, validator3)
-    assert len(test_effect._event_validators[event_name1]) == 2
-    assert test_effect._event_validators[event_name1][0] == validator2
-    assert test_effect._event_validators[event_name1][1] == validator3
+    validator2 = PropertyEquals("y", 30)
+    trigger = EventTrigger(event_name1, validator2)
+    test_effect.set_trigger(trigger)
+    assert test_effect._trigger == trigger
+    assert trigger._parent == test_effect
 
 
-def test_effect_activate_with_validators(test_effect, test_object):
+def test_effect_activates_from_trigger(test_effect, test_object):
     event_name = "test"
     validator1 = PropertyEquals("x", 2)
     validator2 = PropertyEquals("y", 4)
+    trigger = EventTrigger(event_name, validator1, validator2)
 
-    test_effect.set_event_validator(event_name, validator1, validator2)
+    test_effect.set_trigger(trigger)
     event_data = {"object": test_object, "val": 23, "x": 2}
-    test_effect.update(event_name, event_data)
+    trigger.update(event_data)
     assert test_object.val == 0
 
     event_data["y"] = 4
-    test_effect.update(event_name, event_data)
+    trigger.update(event_data)
     assert test_object.val == 23
 
 
@@ -100,7 +93,7 @@ def test_effect_apply_to_target(test_effect, test_object):
     assert test_object.val == 30
 
 
-def test_triggers_off_events(game_manager, test_effect, test_object):
+def test_effect_triggers_off_events(game_manager, test_effect, test_object):
     class ObjectTargeter:
         def get_targets(self, event_data):
             return [test_object]
@@ -108,14 +101,11 @@ def test_triggers_off_events(game_manager, test_effect, test_object):
     targeter1 = ObjectTargeter()
     event_name = "event1"
     event_data = {"val": 30}
-    test_effect.set_event_validator(event_name).add_targeter(targeter1)
-    assert test_effect._is_listening == False
-
-    test_effect.set_listening(True)
-    assert test_effect._is_listening == True
-    assert len(game_manager._listeners) == 1
+    test_effect.set_trigger(event_name).add_targeter(targeter1)
+    test_effect.arm_trigger(True)
+    assert test_effect._trigger._is_armed == True
     assert event_name in game_manager._listeners
-    assert game_manager._listeners[event_name][0] == test_effect.update
+    assert game_manager._listeners[event_name][0] == test_effect._trigger.update
 
     game_manager.trigger_event(event_name, event_data)
     assert test_object.val == 30

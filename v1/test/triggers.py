@@ -5,9 +5,9 @@ def test_event_trigger(game_manager):
     event_name = "event1"
     validator = PropertyEquals("x", 12)
     trigger = EventTrigger(event_name, validator, game_manager=game_manager)
-    assert trigger.event_name == event_name
-    assert len(trigger.validators) == 1
-    assert trigger.validators[0] == validator
+    assert trigger._event_name == event_name
+    assert len(trigger._validators) == 1
+    assert trigger._validators[0] == validator
 
     event_data1 = {"val": 6}
     event_data2 = {"val": 6, "x": 12}
@@ -20,12 +20,12 @@ def test_event_trigger(game_manager):
         def __init__(self):
             self.val = 0
 
-        def update(self, event_name, event_data):
+        def update(self, event_data):
             self.val += event_data["val"]
 
     parent = TriggerParent()
     trigger.set_parent(parent)
-    assert trigger.parent == parent
+    assert trigger._parent == parent
 
     trigger.arm()
     assert len(game_manager._listeners) == 1
