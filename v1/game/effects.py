@@ -7,19 +7,22 @@ class Effect:
     def __init__(self):
         # self.relic = None
         self._event_validators = {}
-        # self._targeters = []
+        self._targeters = []
         # self._is_listening = False
 
     def set_event_validator(self, event_name, *validators):
         self._event_validators[event_name] = validators
         return self
 
-    # def add_targeters(self, targeters):
-    #     if isinstance(targeters, list):
-    #         self._targeters.extend(targeters)
-    #     else:
-    #         self._targeters.append(targeters)
-    #     return self
+    def add_targeter(self, targeter):
+        self._targeters.append(targeter)
+        return self
+
+    def get_targets(self, event_data):
+        targets = []
+        for targeter in self._targeters:
+            targets.extend(targeter.get_targets(event_data))
+        return targets
 
     # def set_listening(self, is_listening):
     #     if self._is_listening == is_listening:
@@ -33,8 +36,10 @@ class Effect:
 
     def update(self, event_name, event_data):
         if self.validate_event(event_name, event_data):
-            self.activate(event_data)
-            # self.activate_on_targets(event_data)
+            if self._targeters:
+                self.activate_on_targets(event_data)
+            else:
+                self.activate(event_data)
 
     def validate_event(self, event_name, event_data):
         validators = self._event_validators.get(event_name)
@@ -43,11 +48,10 @@ class Effect:
         return all([v.validate(event_data) for v in validators])
 
     def activate_on_targets(self, event_data):
-        for targerter in self._targeters:
-            for target in targerter.get_targets(self, event_data):
-                self.activate(event_data, target)
+        for target in self.get_targets(event_data):
+            self.activate(event_data, target)
 
-    def activate(self, event_data):
+    def activate(self, event_data, target):
         pass
 
     # def on_add_to_relic(self, relic, event_name):

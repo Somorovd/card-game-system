@@ -4,8 +4,9 @@ from test import *
 @pytest.fixture
 def test_effect():
     class TestEffect(Effect):
-        def activate(self, event_data):
-            event_data["object"].val = event_data["val"]
+        def activate(self, event_data, *target):
+            target = target[0] if target else event_data["object"]
+            target.val = event_data["val"]
 
     return TestEffect()
 
@@ -60,6 +61,43 @@ def test_effect_activate_with_validators(test_effect, test_object):
     event_data["y"] = 4
     test_effect.update(event_name, event_data)
     assert test_object.val == 23
+
+
+def test_effect_add_targeter(test_effect):
+    targeter1 = EventDataPropertyTargeter("prop")
+    test_effect.add_targeter(targeter1)
+    assert len(test_effect._targeters) == 1
+    assert test_effect._targeters[0] == targeter1
+
+    targeter2 = EventDataPropertyTargeter("test")
+    test_effect.add_targeter(targeter2)
+    assert len(test_effect._targeters) == 2
+    assert test_effect._targeters[0] == targeter1
+    assert test_effect._targeters[1] == targeter2
+
+
+def test_effect_get_targets(test_effect):
+    targeter1 = EventDataPropertyTargeter("prop")
+    targeter2 = EventDataPropertyTargeter("test")
+    event_data = {"prop": [1], "test": [5, 6], "other": [10, 11]}
+    test_effect.add_targeter(targeter1).add_targeter(targeter2)
+    targets = test_effect.get_targets(event_data)
+    assert len(targets) == 3
+    assert targets[0] == 1
+    assert targets[1] == 5
+    assert targets[2] == 6
+
+
+def test_effect_apply_to_target(test_effect, test_object):
+    class ObjectTargeter:
+        def get_targets(self, event_data):
+            return [test_object]
+
+    targeter1 = ObjectTargeter()
+    event_data = {"val": 30}
+    test_effect.add_targeter(targeter1)
+    test_effect.activate_on_targets(event_data)
+    assert test_object.val == 30
 
 
 # def test_stat_modifier_effect(players):
