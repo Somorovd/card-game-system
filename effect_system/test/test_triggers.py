@@ -11,7 +11,7 @@ def trigger_parent():
             self.val = 0
 
         def update(self, event_data, trigger=None):
-            self.val += event_data["val"]
+            self.val = event_data["val"]
 
     return TriggerParent()
 
@@ -270,3 +270,54 @@ def test_repeat_trigger(event_manager, trigger_parent):
     event_manager.trigger_event(event_name, {"val": 30})
     assert repeat_trigger._count == 0
     assert trigger_parent.val == 30
+
+
+def test_n_times_trigger(event_manager, trigger_parent):
+    event_name = "event"
+    event_trigger = EventTrigger(event_name)
+    event_count = 3
+    ntimes = NTimes(event_trigger, event_count)
+    ntimes.set_parent(trigger_parent)
+
+    assert ntimes._trigger == event_trigger
+    assert ntimes._max_count == 3
+    assert ntimes._count == 0
+    assert ntimes._init_toggled == True
+    assert event_trigger._parent == ntimes
+
+    ntimes.arm()
+    assert ntimes._is_armed == True
+    assert event_trigger._is_armed == True
+
+    event_manager.trigger_event(event_name, {"val": 10})
+    assert trigger_parent.val == 10
+    assert ntimes._count == 1
+
+    event_manager.trigger_event(event_name, {"val": 20})
+    assert trigger_parent.val == 20
+    assert ntimes._count == 2
+
+    event_manager.trigger_event(event_name, {"val": 40})
+    assert trigger_parent.val == 40
+    assert ntimes._count == 3
+    assert ntimes._is_armed == False
+    assert event_trigger._is_armed == False
+
+    ntimes.arm()
+    event_manager.trigger_event(event_name, {"val": 60})
+    assert trigger_parent.val == 40
+    assert ntimes._count == 3
+    assert ntimes._is_armed == False
+    assert event_trigger._is_armed == False
+
+    ntimes.reset()
+    assert ntimes._count == 0
+    assert ntimes._is_armed == False
+    assert event_trigger._is_armed == False
+
+    ntimes.arm()
+    event_manager.trigger_event(event_name, {"val": 60})
+    assert trigger_parent.val == 60
+    assert ntimes._count == 1
+    assert ntimes._is_armed == True
+    assert event_trigger._is_armed == True
