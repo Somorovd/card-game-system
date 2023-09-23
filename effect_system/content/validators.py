@@ -43,7 +43,7 @@ class PropertyEquals(Validator):
         return event_data.get(self.property) == value
 
 
-class Or(Validator):
+class OrValidator(Validator):
     def __init__(self, *validators):
         super().__init__()
         self._validators = validators

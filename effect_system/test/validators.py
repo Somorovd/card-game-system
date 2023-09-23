@@ -47,7 +47,7 @@ def test_validator_or():
     val_one_validator = PropertyEquals("val", 1)
     x_ten_validator = PropertyEquals("x", 10)
 
-    or_validator = Or(val_one_validator, x_ten_validator)
+    or_validator = OrValidator(val_one_validator, x_ten_validator)
     assert len(or_validator._validators) == 2
     assert val_one_validator in or_validator._validators
     assert x_ten_validator in or_validator._validators
