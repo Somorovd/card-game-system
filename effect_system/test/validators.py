@@ -41,3 +41,19 @@ def test_validator_property_equals():
     y_ten_validator = PropertyEquals("y", 10)
     res3 = y_ten_validator.validate(event_data2)
     assert res3 == False
+
+
+def test_validator_or():
+    val_one_validator = PropertyEquals("val", 1)
+    x_ten_validator = PropertyEquals("x", 10)
+
+    or_validator = OrValidator(val_one_validator, x_ten_validator)
+    assert len(or_validator._validators) == 2
+    assert val_one_validator in or_validator._validators
+    assert x_ten_validator in or_validator._validators
+
+    assert or_validator.validate({}) == False
+    assert or_validator.validate({"val": 0, "x": 4}) == False
+    assert or_validator.validate({"val": 1, "x": 4}) == True
+    assert or_validator.validate({"val": 0, "x": 10}) == True
+    assert or_validator.validate({"val": 1, "x": 10}) == True

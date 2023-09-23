@@ -7,13 +7,13 @@ from ..content.validators import PropertyEquals
 
 
 @pytest.fixture
-def test_effect(event_manager):
+def test_effect():
     class TestEffect(Effect):
         def activate(self, event_data, *target):
             target = target[0] if target else event_data["object"]
             target.val = event_data["val"]
 
-    return TestEffect(event_manager=event_manager)
+    return TestEffect()
 
 
 @pytest.fixture

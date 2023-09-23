@@ -41,3 +41,12 @@ class PropertyEquals(Validator):
     def _eval(self, event_data):
         value = self.value
         return event_data.get(self.property) == value
+
+
+class OrValidator(Validator):
+    def __init__(self, *validators):
+        super().__init__()
+        self._validators = validators
+
+    def _eval(self, event_data):
+        return any([v.validate(event_data) for v in self._validators])
