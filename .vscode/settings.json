@@ -1,4 +1,0 @@
-{
-  "prettier.useTabs": false,
-  "python.analysis.extraPaths": ["./v1"]
-}
