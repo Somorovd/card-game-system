@@ -583,6 +583,6 @@ In the wiki there is a patch for changing the target of the damage if the curren
 
 ### Shop
 
-### Boss
+**Orange Pellets** - Whenever you play a Power, Attack, and Skill in the same turn, remove all of your debuffs.
 
-### Event
+Checklist of events, can be done in any order.
