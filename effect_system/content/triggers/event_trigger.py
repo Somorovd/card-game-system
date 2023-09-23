@@ -19,6 +19,9 @@ class EventTrigger(Trigger):
         self._is_armed = False
         self._event_manager.remove_listener(self._event_name, self.update)
 
+    def reset(self):
+        self.disarm()
+
     def validate_event(self, event_data):
         if not self._validators:
             return True

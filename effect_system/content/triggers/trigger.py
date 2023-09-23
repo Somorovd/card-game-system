@@ -20,5 +20,9 @@ class Trigger(ABC):
         self._is_armed = False
 
     @abstractmethod
+    def reset(self):
+        self.disarm()
+
+    @abstractmethod
     def update(self, event_data, trigger=None):
         self._parent.update(event_data, trigger=trigger)

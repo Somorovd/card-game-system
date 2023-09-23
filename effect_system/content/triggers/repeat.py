@@ -17,6 +17,10 @@ class Repeat(Trigger):
         self._is_armed = False
         self._trigger.disarm()
 
+    def reset(self):
+        self.disarm()
+        self._count = 0
+
     def update(self, event_data, trigger=None):
         self._count += 1
         if self._count == self._max_count:

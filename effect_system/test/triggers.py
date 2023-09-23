@@ -41,14 +41,17 @@ def test_event_trigger(event_manager, trigger_parent):
     event_manager.trigger_event(event_name, event_data2)
     assert trigger_parent.val == 6
 
+    trigger.reset()
+    assert trigger._is_armed == False
+
 
 def test_sequence_trigger(event_manager, trigger_parent):
     event_name1 = "event1"
     event_name2 = "event2"
-    reset_event = "reset"
+    restart_event = "reset"
     trigger1 = EventTrigger(event_name1)
     trigger2 = EventTrigger(event_name2)
-    reset_trigger = EventTrigger(reset_event)
+    restart_trigger = EventTrigger(restart_event)
 
     sequence = Sequence()
     assert len(sequence._triggers) == 0
@@ -74,19 +77,19 @@ def test_sequence_trigger(event_manager, trigger_parent):
     assert trigger2._is_armed == False
     assert trigger2._parent == sequence
 
-    sequence.add_reset(reset_trigger)
+    sequence.add_restart(restart_trigger)
     assert len(sequence._triggers) == 2
-    assert sequence._reset == reset_trigger
+    assert sequence._restart_trigger == restart_trigger
     assert trigger1._is_armed == False
     assert trigger2._is_armed == False
-    assert reset_trigger._is_armed == False
-    assert reset_trigger._parent == sequence
+    assert restart_trigger._is_armed == False
+    assert restart_trigger._parent == sequence
 
     sequence.arm()
     assert sequence._is_armed == True
     assert sequence._triggers[0]._is_armed == True
     assert sequence._triggers[1]._is_armed == False
-    assert sequence._reset._is_armed == True
+    assert sequence._restart_trigger._is_armed == True
 
     event_manager.trigger_event(event_name1, {})
     assert sequence._pos == 1
@@ -109,14 +112,23 @@ def test_sequence_trigger(event_manager, trigger_parent):
     assert sequence._pos == 2
     assert sequence._triggers[2]._is_armed == True
 
-    event_manager.trigger_event(reset_event, {})
+    sequence.reset()
+    assert sequence._is_armed == False
+    assert all([t._is_armed == False for t in sequence._triggers]) == True
+    assert sequence._pos == 0
+    assert len(sequence._triggers) == 4
+
+    sequence.arm()
+    event_manager.trigger_event(event_name1, {})
+    event_manager.trigger_event(event_name2, {})
+    event_manager.trigger_event(restart_event, {})
     assert sequence._pos == 0
     assert sequence._triggers[0]._is_armed == True
 
     sequence.disarm()
     assert sequence._is_armed == False
     assert all([t._is_armed == False for t in sequence._triggers]) == True
-    assert sequence._reset._is_armed == False
+    assert sequence._restart_trigger._is_armed == False
 
     event_manager.trigger_event(event_name1, {})
     assert sequence._pos == 0
@@ -139,6 +151,8 @@ def test_toggle_trigger(event_manager, trigger_parent):
     toggle.set_toggle_off(trigger_off)
     assert toggle._toggle_on == trigger_on
     assert toggle._toggle_off == trigger_off
+    assert toggle._toggled == False
+    assert toggle._init_toggled == False
     assert trigger_on._parent == toggle
     assert trigger_off._parent == toggle
     assert trigger_on._is_armed == False
@@ -148,40 +162,62 @@ def test_toggle_trigger(event_manager, trigger_parent):
     assert toggle._is_armed == True
     assert trigger_on._is_armed == True
     assert trigger_off._is_armed == False
+    assert toggle._toggled == False
+
+    toggle.toggle_on()
+    assert toggle._toggled == True
+    assert trigger_on._is_armed == False
+    assert trigger_off._is_armed == True
 
     toggle.disarm()
     assert toggle._is_armed == False
     assert trigger_on._is_armed == False
     assert trigger_off._is_armed == False
-
-    toggle.set_toggled(True)
     assert toggle._toggled == True
-    assert trigger_on._is_armed == False
-    assert trigger_off._is_armed == False
 
     toggle.arm()
+    assert toggle._is_armed == True
     assert trigger_on._is_armed == False
     assert trigger_off._is_armed == True
+    assert toggle._toggled == True
 
-    toggle.set_toggled(False)
-    assert toggle._toggled == False
-    assert trigger_on._is_armed == True
+    toggle.set_init_toggled(True)
+    assert toggle._init_toggled == True
+    assert toggle._toggled == True
+
+    toggle.reset()
+    assert toggle._is_armed == False
+    assert trigger_on._is_armed == False
     assert trigger_off._is_armed == False
+    assert toggle._toggled == True
+
+    toggle.set_init_toggled(False)
+    assert toggle._init_toggled == False
+    assert toggle._toggled == False
+
+    toggle.arm()
+    toggle.reset()
+    assert toggle._is_armed == False
+    assert trigger_on._is_armed == False
+    assert trigger_off._is_armed == False
+    assert toggle._toggled == False
 
     toggle.set_trigger(event_trigger)
     assert toggle._trigger == event_trigger
     assert event_trigger._parent == toggle
     assert event_trigger._is_armed == False
 
-    toggle.set_toggled(True)
-    assert trigger_on._is_armed == False
-    assert trigger_off._is_armed == True
+    toggle.arm()
+    assert event_trigger._is_armed == False
+
+    toggle.toggle_on()
     assert event_trigger._is_armed == True
 
     event_manager.trigger_event(event_off, {})
     assert trigger_on._is_armed == True
     assert trigger_off._is_armed == False
     assert event_trigger._is_armed == False
+    assert toggle._toggled == False
 
     event_manager.trigger_event(event_name1, {"val": 21})
     assert trigger_parent.val == 0
@@ -189,12 +225,6 @@ def test_toggle_trigger(event_manager, trigger_parent):
     event_manager.trigger_event(event_on, {})
     event_manager.trigger_event(event_name1, {"val": 95})
     assert trigger_parent.val == 95
-
-    toggle.disarm()
-    assert toggle._is_armed == False
-    assert trigger_on._is_armed == False
-    assert trigger_off._is_armed == False
-    assert event_trigger._is_armed == False
 
 
 def test_repeat_trigger(event_manager, trigger_parent):
@@ -230,6 +260,13 @@ def test_repeat_trigger(event_manager, trigger_parent):
     assert repeat_trigger._count == 2
     assert trigger_parent.val == 0
 
-    event_manager.trigger_event(event_name, {"val": 4})
+    repeat_trigger.reset()
+    assert repeat_trigger._is_armed == False
     assert repeat_trigger._count == 0
-    assert trigger_parent.val == 4
+
+    repeat_trigger.arm()
+    event_manager.trigger_event(event_name, {"val": 10})
+    event_manager.trigger_event(event_name, {"val": 20})
+    event_manager.trigger_event(event_name, {"val": 30})
+    assert repeat_trigger._count == 0
+    assert trigger_parent.val == 30
