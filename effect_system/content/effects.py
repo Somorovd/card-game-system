@@ -1,19 +1,17 @@
-from .event_manager import EVENT_MANAGER
+from .event_manager import EventManager
 from .triggers import EventTrigger
 from abc import ABC, abstractmethod
 
 
 class Effect(ABC):
-    def __init__(self, event_manager=EVENT_MANAGER):
+    def __init__(self):
         self._trigger = None
         self._targeters = []
-        self._event_manager = event_manager
+        self._event_manager = EventManager()
 
     def set_trigger(self, trigger, *validators):
         if isinstance(trigger, str):
-            self._trigger = EventTrigger(
-                trigger, *validators, event_manager=self._event_manager
-            )
+            self._trigger = EventTrigger(trigger, *validators)
         else:
             self._trigger = trigger
         self._trigger.set_parent(self)

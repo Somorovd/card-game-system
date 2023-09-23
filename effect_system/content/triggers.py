@@ -1,10 +1,10 @@
-from .event_manager import EVENT_MANAGER
+from .event_manager import EventManager
 from abc import ABC, abstractmethod
 
 
 class Trigger(ABC):
-    def __init__(self, event_manager=EVENT_MANAGER):
-        self._event_manager = event_manager
+    def __init__(self):
+        self._event_manager = EventManager()
         self._parent = None
         self._is_armed = False
 
@@ -25,8 +25,8 @@ class Trigger(ABC):
 
 
 class EventTrigger(Trigger):
-    def __init__(self, event_name, *validators, event_manager=EVENT_MANAGER):
-        super().__init__(event_manager=event_manager)
+    def __init__(self, event_name, *validators):
+        super().__init__()
         self._event_name = event_name
         self._validators = validators
 
@@ -53,8 +53,8 @@ class EventTrigger(Trigger):
 
 
 class Sequence(Trigger):
-    def __init__(self, event_manager=EVENT_MANAGER):
-        super().__init__(event_manager=event_manager)
+    def __init__(self):
+        super().__init__()
         self._triggers = []
         self._reset = None
         self._pos = 0
@@ -92,3 +92,8 @@ class Sequence(Trigger):
         self._reset = trigger
         trigger.set_parent(self)
         return self
+
+
+# class Toggle(Trigger):
+#     def __init__(self):
+#         super().__init__()
