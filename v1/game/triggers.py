@@ -1,13 +1,27 @@
 from .game_manager import GAME_MANAGER
+from abc import ABC, abstractmethod
 
 
-class Trigger:
+class Trigger(ABC):
     def __init__(self, game_manager=GAME_MANAGER):
         self._game_manager = game_manager
         self._parent = None
+        self._is_armed = False
 
     def set_parent(self, parent):
         self._parent = parent
+
+    @abstractmethod
+    def arm(self):
+        self._is_armed = True
+
+    @abstractmethod
+    def disarm(self):
+        self._is_armed = False
+
+    @abstractmethod
+    def update(self, event_data, trigger=None):
+        self._parent.update(event_data, trigger=trigger)
 
 
 class EventTrigger(Trigger):
@@ -15,7 +29,6 @@ class EventTrigger(Trigger):
         super().__init__(game_manager=game_manager)
         self._event_name = event_name
         self._validators = validators
-        self._is_armed = False
 
     def arm(self):
         if self._is_armed:
@@ -41,11 +54,10 @@ class EventTrigger(Trigger):
 
 class Sequence(Trigger):
     def __init__(self, game_manager=GAME_MANAGER):
+        super().__init__(game_manager=game_manager)
         self._triggers = []
         self._reset = None
         self._pos = 0
-        self._is_armed = False
-        self._game_manager = game_manager
 
     def __len__(self):
         return len(self._triggers)
