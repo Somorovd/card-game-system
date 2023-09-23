@@ -31,7 +31,7 @@ class Sequence(Trigger):
         if self._pos == len(self._triggers) - 1 and self._parent:
             self._parent.update(event_data, trigger=self)
 
-        self._triggers[self._pos].disarm()
+        self._triggers[self._pos].reset()
         if trigger and trigger == self._restart_trigger:
             self._pos = 0
         else:
