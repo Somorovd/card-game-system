@@ -37,7 +37,7 @@ class Effect:
         else:
             self._trigger.disarm()
 
-    def update(self, event_data):
+    def update(self, event_data, trigger=None):
         if self._targeters:
             self.activate_on_targets(event_data)
         else:
