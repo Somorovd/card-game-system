@@ -1,5 +1,5 @@
 import pytest
-from ..test import *
+from . import *
 from ..content.triggers import *
 from ..content.validators import PropertyEquals
 

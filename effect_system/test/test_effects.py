@@ -1,5 +1,5 @@
 import pytest
-from ..test import *
+from . import *
 from ..content.effects import Effect
 from ..content.targeters import EventDataPropertyTargeter
 from ..content.triggers import EventTrigger
