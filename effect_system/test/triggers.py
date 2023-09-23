@@ -195,3 +195,41 @@ def test_toggle_trigger(event_manager, trigger_parent):
     assert trigger_on._is_armed == False
     assert trigger_off._is_armed == False
     assert event_trigger._is_armed == False
+
+
+def test_repeat_trigger(event_manager, trigger_parent):
+    event_name = "repeating"
+    event_trigger = EventTrigger(event_name)
+    repeat_count = 3
+
+    repeat_trigger = Repeat(event_trigger, repeat_count)
+    repeat_trigger.set_parent(trigger_parent)
+    assert repeat_trigger._trigger == event_trigger
+    assert event_trigger._parent == repeat_trigger
+    assert repeat_trigger._max_count == repeat_count
+    assert repeat_trigger._count == 0
+
+    repeat_trigger.arm()
+    assert repeat_trigger._is_armed == True
+    assert event_trigger._is_armed == True
+
+    repeat_trigger.disarm()
+    assert repeat_trigger._is_armed == False
+    assert event_trigger._is_armed == False
+
+    repeat_trigger.arm()
+    event_manager.trigger_event(event_name, {"val": 1})
+    assert repeat_trigger._count == 1
+    assert trigger_parent.val == 0
+
+    event_manager.trigger_event("other", {"val": 2})
+    assert repeat_trigger._count == 1
+    assert trigger_parent.val == 0
+
+    event_manager.trigger_event(event_name, {"val": 3})
+    assert repeat_trigger._count == 2
+    assert trigger_parent.val == 0
+
+    event_manager.trigger_event(event_name, {"val": 4})
+    assert repeat_trigger._count == 0
+    assert trigger_parent.val == 4
