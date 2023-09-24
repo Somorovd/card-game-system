@@ -232,7 +232,7 @@ def test_repeat_trigger(event_manager, trigger_parent):
     event_trigger = EventTrigger(event_name)
     repeat_count = 3
 
-    repeat_trigger = Repeat(event_trigger, repeat_count)
+    repeat_trigger = Repeat(repeat_count, event_trigger)
     repeat_trigger.set_parent(trigger_parent)
     assert repeat_trigger._trigger == event_trigger
     assert event_trigger._parent == repeat_trigger
@@ -276,7 +276,7 @@ def test_n_times_trigger(event_manager, trigger_parent):
     event_name = "event"
     event_trigger = EventTrigger(event_name)
     event_count = 3
-    ntimes = NTimes(event_trigger, event_count)
+    ntimes = NTimes(event_count, event_trigger)
     ntimes.set_parent(trigger_parent)
 
     assert ntimes._trigger == event_trigger

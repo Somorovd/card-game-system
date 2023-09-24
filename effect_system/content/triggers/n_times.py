@@ -2,12 +2,12 @@ from .toggle import Toggle
 
 
 class NTimes(Toggle):
-    def __init__(self, trigger, max_count):
+    def __init__(self, max_count, trigger):
         super().__init__()
-        self._trigger = trigger
-        trigger.set_parent(self)
         self._max_count = max_count
         self._count = 0
+        self._trigger = trigger
+        trigger.set_parent(self)
         self.set_init_toggled(True)
 
     def update(self, event_data, trigger=None):
