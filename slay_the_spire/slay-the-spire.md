@@ -14,8 +14,8 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 ```python
 Relic("Burning Blood")
 .add_effect(
-	StatUpdate("health", 6)
-	.set_trigger(EventTrigger("on_combat_end"))
+  StatUpdate("health", 6)
+  .set_trigger(EventTrigger("on_combat_end"))
 )
 .add_targeter(AttachedPlayerTargeter())
 ```
@@ -30,14 +30,13 @@ _ALT: The first time you draw cards each combat, draw 2 additional cards._
 ```python
 Relic("Ring of the Snake")
 .add_effect(
-		EventDataUpdate("number_cards", 2)
-		.set_trigger(
-			Toggle()
-            .set_toggle_on(EventTrigger("on_combat_start"))
-            .set_toggle_off(EventTrigger("on_player_post_draw_cards"))
-			.set_trigger(EventTrigger"on_player_pre_draw_cards"))
-        )
-	)
+    EventDataUpdate("number_cards", 2)
+    .set_trigger(
+        Toggle()
+        .set_toggle_on(EventTrigger("on_combat_start"))
+        .set_toggle_off(EventTrigger("on_player_post_draw_cards"))
+        .set_trigger(EventTrigger"on_player_pre_draw_cards")
+    )
 )
 ```
 
@@ -48,9 +47,9 @@ Try to utilize the Command design pattern to encapsulate instructions within an 
 ```python
 Relic("Cracked Core")
 .add_effect(
-	CommandEffect(PlayerChannel(1, "lightning"))
-	.set_trigger(EventTrigger("on_combat_start"))
-	.add_targeter(AttachedPlayerTargeter())
+    CommandEffect(PlayerChannel(1, "lightning"))
+    .set_trigger(EventTrigger("on_combat_start"))
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -59,9 +58,9 @@ Relic("Cracked Core")
 ```python
 Relic("Pure Water")
 .add_effect(
-	CommandEffect(PlayerAddToHand(1, CardMiracle()))
-	.set_trigger(EventTrigger("on_combat_start"))
-	.add_targeter(AttachedPlayerTargeter())
+    CommandEffect(PlayerAddToHand(1, CardMiracle()))
+    .set_trigger(EventTrigger("on_combat_start"))
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -76,7 +75,7 @@ Relic("Akabako")
     .set_trigger(
         Toggle()
         .set_toggle_on(EventTrigger("on_combat_start"))
-	    .set_toggle_off(EventTrigger("on_player_post_attack"))
+        .set_toggle_off(EventTrigger("on_player_post_attack"))
         .set_trigger(EventTrigger("on_player_pre_attack"))
     )
 )
@@ -87,9 +86,9 @@ Relic("Akabako")
 ```python
 Relic("Anchor")
 .add_effect(
-	StatUpdate("block", 10)
-	.set_trigger(EventTrigger("on_combat_start"))
-	.add_targeter(AttachedPlayerTargeter())
+    StatUpdate("block", 10)
+    .set_trigger(EventTrigger("on_combat_start"))
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -98,13 +97,13 @@ Relic("Anchor")
 ```python
 Relic("Ancient Tea Set")
 .add_effect(
-	StatUpdate("energy", 2)
+    StatUpdate("energy", 2)
     .set_trigger(
         Sequence()
         .add_seq(EventTrigger("on_player_enter_rest_site"))
         .add_seq(EventTrigger("on_combat_start"))
     )
-	.add_targeter(AttachedPlayerTargeter())
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -113,19 +112,19 @@ Relic("Ancient Tea Set")
 ```python
 Relic("Art of War")
 .add_effect(
-	StatUpdate("energy", 1)
-	.set_trigger(
-		Sequence()
-		.add_seq(EventTrigger("on_player_start_turn"))
-		.add_seq(EventTrigger("on_player_end_turn"))
-		.add_reset(
+    StatUpdate("energy", 1)
+    .set_trigger(
+        Sequence()
+        .add_seq(EventTrigger("on_player_start_turn"))
+        .add_seq(EventTrigger("on_player_end_turn"))
+        .add_reset(
             EventTrigger(
                 "on_player_play_card",
-                 PropertyEquals("type", "attack")
+                PropertyEquals("type", "attack")
             )
         )
-	)
-	.add_targeter(AttachedPlayerTargeter())
+    )
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -134,9 +133,9 @@ Relic("Art of War")
 ```python
 Relic("Bag of Marbles")
 .add_effect(
-	AddStatus(Vulnerable, 1)
-	.set_trigger(EventTrigger("on_combat_start"))
-	.add_targeter(AttachedPlayerEnemiesTargeter())
+    AddStatus(Vulnerable, 1)
+    .set_trigger(EventTrigger("on_combat_start"))
+    .add_targeter(AttachedPlayerEnemiesTargeter())
 )
 
 '''
@@ -149,12 +148,12 @@ i.e. decrease by 1 every turn or clear after attacking
 
 Status("Vulnerable")
 .add_effect(
-	EventDataUpdate("damage", MultOp(1.5))
-	.set_trigger(EventTrigger("on_player_take_damage"))
+    EventDataUpdate("damage", MultOp(1.5))
+    .set_trigger(EventTrigger("on_player_take_damage"))
 )
 .add_change(
-	StatUpdate("amount", -1)
-	.set_trigger(EventTrigger("on_player_end_turn"))
+    StatUpdate("amount", -1)
+    .set_trigger(EventTrigger("on_player_end_turn"))
 )
 ```
 
@@ -176,15 +175,15 @@ COMMANAD PATTERN?
 ```python
 Relic("Bronze Scales")
 .add_effect(
-	CommandEffect(PlayerTakeDamage(self, 3)) # source, amount
-	.set_trigger(
+    CommandEffect(PlayerTakeDamage(self, 3)) # source, amount
+    .set_trigger(
         EventTrigger(
             "on_player_post_attack",
-		    PropertyEquals("target", AttachedPlayerTargeter())
+            PropertyEquals("target", AttachedPlayerTargeter())
             use_default=False
-    	)
+        )
     )
-	.add_targeter(EventDataTargeter("player"))
+    .add_targeter(EventDataTargeter("player"))
 )
 ```
 
@@ -213,9 +212,9 @@ Relic("Centennial Puzzle")
 ```python
 Relic("Ceramic Fish")
 .add_effect(
-	StatUpdate("gold", 9)
-	.set_trigger(EventTrigger("on_player_add_card"))
-	.add_targeter(AttachedPlayerTargeter())
+    StatUpdate("gold", 9)
+    .set_trigger(EventTrigger("on_player_add_card"))
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -224,9 +223,9 @@ Relic("Ceramic Fish")
 ```python
 Relic("Dream Catcher")
 .add_effect(
-	CommandEffect(PlayerAddCard(1))
-	.set_trigger(EventTrigger("on_player_rest"))
-	.add_targeter(AttachedPlayerTargeter())
+    CommandEffect(PlayerAddCard(1))
+    .set_trigger(EventTrigger("on_player_rest"))
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -235,9 +234,11 @@ Relic("Dream Catcher")
 ```python
 Relic("Happy Flower")
 .add_effect(
-	Counter(3, StatUpdate("energy", 1))
-	.set_trigger(EventTrigger("on_player_turn_start"))
-	.add_targeter(AttachedPlayerTargeter())
+    StatUpdate("energy", 1)
+    .set_trigger(
+        Repeat(3, EventTrigger("on_player_turn_start"))
+    )
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -256,11 +257,11 @@ Relic("Maw Bank")
 .add_effect(
     StatUpdate("gold", 12)
     .set_trigger(
-	    Toggle()
-	    .set_toggle(True)
-	    .set_toggle_off(EventTrigger("on_player_shop_purchase"))
-        .set_trigger(EventTrigger("on_player_climb_floor")))
-	)
+        Toggle()
+        .set_toggle(True)
+        .set_toggle_off(EventTrigger("on_player_shop_purchase"))
+        .set_trigger(EventTrigger("on_player_climb_floor"))
+    )
     .add_targeter(AttachedPlayerTargeter())
 )
 ```
@@ -270,14 +271,14 @@ Relic("Maw Bank")
 ```python
 Relic("Meal Ticket")
 .add_effect(
-	Heal(15)
-	.set_trigger(
+    Heal(15)
+    .set_trigger(
         EventTrigger(
-		    "on_player_climb_floor",
-		    PropertyEquals("dest", "shop")
+            "on_player_climb_floor",
+            PropertyEquals("dest", "shop")
         )
-	)
-	.add_targeter(AttachedPlayerTargeter())
+    )
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -286,14 +287,17 @@ Relic("Meal Ticket")
 ```python
 Relic("Nunchaku")
 .add_effect(
-	Counter(10, StatUpdate("energy", 1))
-	.set_trigger(
-        EventTrigger(
-		    "on_player_play_card",
-		    PropertyEquals("type", "attack")
+    StatUpdate("energy", 1)
+    .set_trigger(
+        Repeat(
+            10,
+            EventTrigger(
+                "on_player_play_card",
+                PropertyEquals("type", "attack")
+            )
         )
-	)
-	.add_targeter(AttachedPlayerTargeter())
+    )
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -302,9 +306,9 @@ Relic("Nunchaku")
 ```python
 Relic("Oddly Smooth Stone")
 .add_effect(
-	AddStatus(Dexterity, 1)
-	.set_trigger(EventTrigger("on_combat_start"))
-	.add_targeter(AttachedPlayerTargeter())
+    AddStatus(Dexterity, 1)
+    .set_trigger(EventTrigger("on_combat_start"))
+    .add_targeter(AttachedPlayerTargeter())
 )
 
 '''
@@ -312,8 +316,8 @@ Need a way of referencing a status's current value
 '''
 Status("Dexterity")
 .add_effect(
-	EventDataUpdate("block", AddOp(AttachedStatusValue()))
-	.set_trigger(EventTrigger("on_player_pre_gain_block"))
+  EventDataUpdate("block", AddOp(AttachedStatusValue()))
+  .set_trigger(EventTrigger("on_player_pre_gain_block"))
 )
 ```
 
@@ -324,13 +328,16 @@ _I set card to None in the event, but there may be a better way to not interfere
 ```python
 Relic("Omamori")
 .add_effect(
-	NTimes(2, EventDataUpdate("card", None))
-	.set_trigger(
-        EventTrigger(
-            "on_player_add_card",
-            PropertyEquals("type", "curse")
+    EventDataUpdate("card", None)
+    .set_trigger(
+        NTimes(
+            2,
+            EventTrigger(
+                "on_player_add_card",
+                PropertyEquals("type", "curse")
+            )
         )
-	)
+    )
 )
 ```
 
@@ -339,19 +346,19 @@ Relic("Omamori")
 ```python
 Relic("Orichalcum")
 .add_effect(
-	StatUpdate("block", 6)
-	.set_trigger(
-		Sequence()
-		.add_seq(EventTrigger("on_player_turn_start"))
-		.add_seq(EventTrigger("on_player_turn_end"))
-		.add_reset(
+    StatUpdate("block", 6)
+    .set_trigger(
+        Sequence()
+        .add_seq(EventTrigger("on_player_turn_start"))
+        .add_seq(EventTrigger("on_player_turn_end"))
+        .add_reset(
             EventTrigger(
                 "on_player_post_gain_block"
                 PropertyInRange("block", min=1)
             )
-		)
-	)
-	.add_targeter(AttachedPlayerTargeter())
+        )
+    )
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -364,14 +371,17 @@ _See **Nunchaku**_
 ```python
 Relic("Potion Belt")
 .add_effect(
-	NTimes(1, StatUpgrade("potion_slots", 2))
-	.set_trigger(
-        EventTrigger(
-            "on_player_add_relic",
-            PropertyEquals("relic", AttachedRelicTargetter())
+    StatUpdate("potion_slots", 2)
+    .set_trigger(
+        NTimes(
+            1,
+            EventTrigger(
+                "on_player_add_relic",
+                PropertyEquals("relic", AttachedRelicTargetter())
+            )
         )
-	)
-	.add_targeter(AttachedPlayerTargeter())
+    )
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -380,18 +390,18 @@ Relic("Potion Belt")
 ```python
 Relice("Preserved Insect")
 .add_effect(
-	StatUpdate("health", MultOp(0.75))
-	.set_trigger(
-		Sequence()
-		.add_seq(
+    StatUpdate("health", MultOp(0.75))
+    .set_trigger(
+        Sequence()
+        .add_seq(
             EventTrigger(
                 "on_player_climb_floor",
                 PropertyEquals("dest", "elite")
             )
-		)
-		.add_seq(EventTrigger("on_combat_start"))
-	)
-	.add_targeter(AttachedPlayerEnemyTargeter()) #  <-- ?
+        )
+        .add_seq(EventTrigger("on_combat_start"))
+    )
+    .add_targeter(AttachedPlayerEnemyTargeter())
 )
 ```
 
@@ -402,13 +412,13 @@ _ALT: Healing from Resting is increased by 15_
 ```python
 Relic("Regal Pillow")
 .add_effect(
-	EventDataUpdate("amount", 15)
-	.set_trigger(
+    EventDataUpdate("amount", 15)
+    .set_trigger(
         EventTrigger(
             "on_player_pre_heal",
             PropertyEquals("source", "rest")
         )
-	)
+    )
 )
 ```
 
@@ -422,14 +432,14 @@ Relic("Regal Pillow")
 ```python
 Relic("Strawberry")
 .add_effect(
-	NTimes(1, StatModifierEffect("max_health", 7))
-	.set_trigger(
-        EventTrigger(
-            "on_player_add_relic",
-            AttachedRelicValidator()
-        )
-	)
-	.add_targeter(AttachedPlayerTargeter())
+    NTimes(1, StatModifierEffect("max_health", 7))
+    .set_trigger(
+            EventTrigger(
+                "on_player_add_relic",
+                AttachedRelicValidator()
+            )
+    )
+    .add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -443,18 +453,18 @@ What about effects that trigger off of multiple events??
 ```python
 Relic("The Boot")
 .add_effect(
-	EventDataUpdate("damage", MaxOp(5))
-	.set_trigger(
+    EventDataUpdate("damage", MaxOp(5))
+    .set_trigger(
         EventTrigger(
             "on_player_pre_take_damage",
             AttachedPlayerValidator().invert(),
-            Or(
+            OrValidator(
                 PropertyEquals("source", AttachedPlayerTargeter()),
                 PropertyEquals("source", AttachedPlayerRelicTargeter()),
             )
             use_default=False
         )
-	)
+    )
 )
 ```
 
@@ -466,29 +476,16 @@ Relic("The Boot")
 ```python
 Relic("Tiny Chest")
 .add_effect(
-	Counter(4, CommandEffect(SetNextQuestionRoom("treasure")))
-	.set_trigger(
-        EventTrigger(
-            "on_player_climb_floor",
-            PropertyEquals("dest", "?")
-        )
-	)
-)
-
-Relic("Tiny Chest")
-.add_effect(
-	EventDataUpdate("type", "treasure")
-	.set_trigger(
-		Sequence()
-		.add_seq(
+    CommandEffect(SetNextQuestionRoom("treasure"))
+    .set_trigger(
+        Repeat(
+            4,
             EventTrigger(
                 "on_player_climb_floor",
-                PropertyEquals("dest", "?"),
-                repeat=4
-		    )
+                PropertyEquals("dest", "?")
+            )
         )
-		.add_seq(EventTrigger("on_pre_room_load"))
-	)
+    )
 )
 ```
 
@@ -497,8 +494,8 @@ Relic("Tiny Chest")
 ```python
 Relic("Toy Ornithopter")
 .add_effect(
-	Heal(5)
-	.set_trigger(EventTrigger("on_player_pre_potion"))
+    Heal(5)
+    .set_trigger(EventTrigger("on_player_pre_potion"))
 )
 ```
 
@@ -514,21 +511,22 @@ Not satisfied with this but will hve to see more examples.
 ```python
 Relic("War Paint")
 .add_effect(
-	CommandEffect(UpgradeCard())
-	.set_trigger(
+    CommandEffect(UpgradeCard())
+    .set_trigger(
         EventTrigger(
             "on_player_add_relic",
             AttachedRelicValidator()
         )
-	)
-	.add_targeter(
-		Random(2,
-			AttachedPlayerCardsTargeter()
-			.where("type", "skill")
-			.where("upgraded", False),
-			unique=True
-		)
-	)
+    )
+    .add_targeter(
+        Random(
+            2,
+            AttachedPlayerCardsTargeter()
+            .where("type", "skill")
+            .where("upgraded", False),
+            unique=True
+        )
+    )
 )
 ```
 
