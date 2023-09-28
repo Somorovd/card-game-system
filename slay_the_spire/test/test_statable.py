@@ -90,3 +90,28 @@ def test_stat_sources():
 	source2.add_source(source3)
 	source3.adjust_current(2)
 	assert stat.mod == 18
+
+def test_statable_stats():
+	statable = Statable()
+	statable.add_stat("1", 10)
+	statable.add_stat("2", 100, current=25)
+	assert len(statable.stats) == 2
+	assert statable.has_stat("1")
+	assert statable.has_stat("2")
+	assert not statable.has_stat("3")
+
+	stat1 = statable.stats["1"]
+	stat2 = statable.stats["2"]
+	assert stat1.current == 10
+	assert stat2.current == 25
+
+	assert statable.get_stat("1") == 10
+	assert statable.get_stat("2") == 25
+	assert statable.get_stat("3") == 0
+
+	source = Stat("1", 0)
+	statable.add_stat_source("1", source)
+	assert len(stat1.sources) == 1
+
+	source.adjust_current(4)
+	assert statable.get_stat("1") == 14

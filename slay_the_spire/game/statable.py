@@ -5,29 +5,31 @@ class Statable(Subject):
         super().__init__()
         self.stats = {}
 
-#     def add_stat(self, stat_type, base, current=None):
-#         stat = Stat(stat_type, base, current=current)
-#         self.stats[stat_type] = stat
-#         stat.add_listener(
-#             "on_stat_update",
-#             lambda event_data: self.trigger_event("on_stat_update", event_data),
-#         )
+    def add_stat(self, stat_type, base, current=None):
+        stat = Stat(stat_type, base, current=current)
+        self.stats[stat_type] = stat
+        stat.add_listener(
+            "on_stat_update",
+            lambda event_data: self.trigger_event("on_stat_update", event_data),
+        )
 
-#     def has_stat(self, stat_type):
-#         return stat_type in self.stats
+    def has_stat(self, stat_type):
+        return stat_type in self.stats
 
-#     def get_stat(self, stat_type):
-#         return self.stats[stat_type].current
+    def get_stat(self, stat_type):
+        if not self.has_stat(stat_type):
+            return 0
+        return self.stats[stat_type].current
 
 #     def adjust_stat(self, stat_type, amount):
 #         self.stats[stat_type].adjust_current(amount)
 
-#     def add_stat_source(self, stat_type, source):
-#         if not stat_type in self.stats:
-#             self.add_stat(stat_type, 0)
+    def add_stat_source(self, stat_type, source):
+        if not stat_type in self.stats:
+            self.add_stat(stat_type, 0)
 
-#         stat = self.stats[stat_type]
-#         stat.add_source(source)
+        stat = self.stats[stat_type]
+        stat.add_source(source)
 
 
 class Stat(Subject):
