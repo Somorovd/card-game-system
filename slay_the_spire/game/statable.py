@@ -21,9 +21,6 @@ class Statable(Subject):
             return 0
         return self.stats[stat_type].current
 
-#     def adjust_stat(self, stat_type, amount):
-#         self.stats[stat_type].adjust_current(amount)
-
     def add_stat_source(self, stat_type, source):
         if not stat_type in self.stats:
             self.add_stat(stat_type, 0)

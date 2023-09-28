@@ -6,8 +6,8 @@ class Player(Statable):
     def __init__(self, name):
         super().__init__()
         self.name = name
-        self._event_manager = EventManager()
 #         self.relics = []
+        self._event_manager = EventManager()
         self.init_stats()
 
 #     def add_relic(self, relic):
