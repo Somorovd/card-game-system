@@ -15,6 +15,10 @@ class Relic(Statable):
         self.effects.append(effect)
         return self
 
+    def on_equip(self):
+        for effect in self.effects:
+            effect.arm_trigger(True)
+
 #     def equip_to_player(self, player):
 #         self.player = player
 #         for effect in self.effects:

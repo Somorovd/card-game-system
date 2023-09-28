@@ -6,19 +6,21 @@ class Player(Statable):
     def __init__(self, name):
         super().__init__()
         self.name = name
-#         self.relics = []
+        self.relics = []
         self._event_manager = EventManager()
         self.init_stats()
-
-#     def add_relic(self, relic):
-#         self.relics.append(relic)
-#         relic.equip_to_player(self)
-#         add_relic_event_data = {"player": self, "relic": relic}
-#         res = EVENT_MANAGER.trigger_event("on_player_add_relic", add_relic_event_data)
 
     def init_stats(self):
         self.add_stat("health", 100)
         self.add_stat("max_health", 100)
+
+
+    def equip_relic(self, relic):
+        self.relics.append(relic)
+        relic.on_equip()
+        equip_relic_event_data = {"player": self, "relic": relic}
+        res = self._event_manager.trigger_event("on_player_equip_relic", equip_relic_event_data)
+
 
     def attack(self, target, amount):
         pre_attack_event_data = {"player": self, "amount": amount, "target": target}

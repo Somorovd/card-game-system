@@ -1,5 +1,6 @@
 from . import *
 from ..game.player import Player
+from ..game.relic import Relic
 
 
 @pytest.fixture
@@ -13,6 +14,7 @@ def test_player_init(event_manager):
   assert player.get_stat("health") == 100
   assert player.get_stat("max_health") == 100
   assert player._event_manager == event_manager
+  assert len(player.relics) == 0
 
 def test_player_attack_damage_heal(players):
   jay, larry = players
@@ -96,3 +98,27 @@ def test_player_attack_events(event_manager, test_listener, players):
     assert post_attack_data["player"] == jay
     assert post_attack_data["target"] == larry
     assert post_attack_data["amount"] == 10
+
+def test_equip_relic_to_player(test_listener, players):
+    from effect_system import Effect, EventTrigger
+    jay, larry  =  players
+    test_listener.create_listener("on_player_equip_relic")
+
+    class TestEffect(Effect):
+        def activate(self):
+            pass
+
+    relic = Relic("test relic")
+    effect = TestEffect()
+    trigger = EventTrigger("event_name")
+    jay.equip_relic(relic.add_effect(effect.set_trigger(trigger)))
+    assert len(jay.relics) == 1
+    assert jay.relics[0] == relic
+    assert len(test_listener.events) == 1
+    assert test_listener.events[0][0] == "on_player_equip_relic"
+    assert trigger._is_armed == True
+
+    equip_relic_data = test_listener.events[0][1]
+    assert len(equip_relic_data) == 2
+    assert equip_relic_data["player"] == jay
+    assert equip_relic_data["relic"] == relic
