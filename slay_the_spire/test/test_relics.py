@@ -95,3 +95,26 @@ def test_ring_of_the_snake(event_manager, game_manager, players):
     event_manager.trigger_event("on_combat_start", {})
     jay.draw_cards(1)
     assert len(jay.hand) == 8
+
+
+def test_centennial_puzzle(event_manager, game_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+    jay.equip_relic(CentennialPuzzle())
+
+    larry.attack(jay, 4)
+    assert len(jay.hand) == 0
+
+    event_manager.trigger_event("on_combat_start", {})
+    larry.attack(jay, 0)
+    assert len(jay.hand) == 0
+
+    larry.attack(jay, 2)
+    assert len(jay.hand) == 3
+
+    larry.attack(jay, 2)
+    assert len(jay.hand) == 3
+
+    event_manager.trigger_event("on_combat_start", {})
+    larry.attack(jay, 2)
+    assert len(jay.hand) == 6

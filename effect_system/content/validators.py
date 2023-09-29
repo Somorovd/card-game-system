@@ -18,18 +18,16 @@ class Validator(ABC):
         pass
 
 
-# class PropertyInRange(Validator):
-#     def __init__(self, property, min=-float("inf"), max=float("inf")):
-#         super().__init__()
-#         self.property = property
-#         self.min = min
-#         self.max = max
+class PropertyInRange(Validator):
+    def __init__(self, property, min=-float("inf"), max=float("inf")):
+        super().__init__()
+        self.property = property
+        self.min = min
+        self.max = max
 
-#     def _eval(self, effect, event_data):
-#         return (
-#             event_data[self.property] > self.min
-#             and event_data[self.property] < self.max
-#         )
+    def _eval(self, event_data):
+        val = event_data.get(self.property) or 0
+        return val >= self.min and val <= self.max
 
 
 class PropertyEquals(Validator):
