@@ -1,5 +1,6 @@
 from effect_system import Subject
 
+
 class Statable(Subject):
     def __init__(self):
         super().__init__()
@@ -47,7 +48,7 @@ class Stat(Subject):
 
     def add_source(self, source):
         if not isinstance(source, Subject):
-            raise(TypeError)
+            raise (TypeError)
         self.sources[source] = 0
 
         def _update_func(event_data):

@@ -14,17 +14,19 @@ class Player(Statable):
         self.add_stat("health", 100)
         self.add_stat("max_health", 100)
 
-
     def equip_relic(self, relic):
         self.relics.append(relic)
         relic.on_equip()
         equip_relic_event_data = {"player": self, "relic": relic}
-        res = self._event_manager.trigger_event("on_player_equip_relic", equip_relic_event_data)
-
+        res = self._event_manager.trigger_event(
+            "on_player_equip_relic", equip_relic_event_data
+        )
 
     def attack(self, target, amount):
         pre_attack_event_data = {"player": self, "amount": amount, "target": target}
-        res = self._event_manager.trigger_event("on_player_pre_attack", pre_attack_event_data)
+        res = self._event_manager.trigger_event(
+            "on_player_pre_attack", pre_attack_event_data
+        )
 
         target.take_damage(amount, self)
 
@@ -35,10 +37,12 @@ class Player(Statable):
 
     def apply_healing(self, amount):
         pre_heal_event_data = {"player": self, "amount": amount}
-        res = self._event_manager.trigger_event("on_player_pre_heal", pre_heal_event_data)
+        res = self._event_manager.trigger_event(
+            "on_player_pre_heal", pre_heal_event_data
+        )
 
         max_heal = self.get_stat("max_health") - self.get_stat("health")
-        heal_amount = min(amount, max_heal);
+        heal_amount = min(amount, max_heal)
         self.stats["health"].adjust_current(heal_amount)
 
         post_heal_event_data = res

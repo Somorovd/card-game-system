@@ -1,4 +1,4 @@
-from .statable import Statable, Stat
+from ..statable import Statable, Stat
 
 
 class Relic(Statable):

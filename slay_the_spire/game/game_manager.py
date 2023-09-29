@@ -1,4 +1,4 @@
-class GameManager():
+class GameManager:
     _instance = None
 
     def __new__(cls):
@@ -14,7 +14,7 @@ class GameManager():
             return
         super().__init__()
         self._initialized = True
-				self.player = None
+        self.player = None
 
     def reset(self):
         super().__init__()
