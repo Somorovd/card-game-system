@@ -1,67 +1,67 @@
-# from .event_manager import EVENT_MANAGER
-# from .statable import Statable, Stat
+from effect_system import EventManager
+from .statable import Statable, Stat
 
 
-# class Player(Statable):
-#     def __init__(self, name):
-#         super().__init__()
-#         self.name = name
-#         self.stats = {
-#             "health": Stat("health", 10),
-#             "max_health": Stat("max_health", 100),
-#             "power": Stat("power", 2),
-#         }
-#         self.relics = []
+class Player(Statable):
+    def __init__(self, name):
+        super().__init__()
+        self.name = name
+        self.relics = []
+        self._event_manager = EventManager()
+        self.init_stats()
 
-#     @property
-#     def health(self):
-#         return self.stats["health"].current
+    def init_stats(self):
+        self.add_stat("health", 100)
+        self.add_stat("max_health", 100)
 
-#     @health.setter
-#     def health(self, val):
-#         self.stats["health"].current = min(self.stats["max_health"].current, val)
+    def equip_relic(self, relic):
+        self.relics.append(relic)
+        relic.on_equip()
+        equip_relic_event_data = {"player": self, "relic": relic}
+        res = self._event_manager.trigger_event(
+            "on_player_equip_relic", equip_relic_event_data
+        )
 
-#     def add_relic(self, relic):
-#         self.relics.append(relic)
-#         relic.equip_to_player(self)
-#         add_relic_event_data = {"player": self, "relic": relic}
-#         res = EVENT_MANAGER.trigger_event("on_player_add_relic", add_relic_event_data)
+    def attack(self, target, amount):
+        pre_attack_event_data = {"player": self, "amount": amount, "target": target}
+        res = self._event_manager.trigger_event(
+            "on_player_pre_attack", pre_attack_event_data
+        )
 
-#     def attack(self, target, amount):
-#         pre_attack_event_data = {"player": self, "damage": amount, "target": target}
-#         res = EVENT_MANAGER.trigger_event("on_player_pre_attack", pre_attack_event_data)
+        target.take_damage(res["amount"], self)
 
-#         res["target"].take_damage(self, res["damage"])
+        post_attack_event_data = res
+        res = self._event_manager.trigger_event(
+            "on_player_post_attack", post_attack_event_data
+        )
 
-#         post_attack_event_data = res
-#         res = EVENT_MANAGER.trigger_event(
-#             "on_player_post_attack", post_attack_event_data
-#         )
+    def apply_healing(self, amount):
+        pre_heal_event_data = {"player": self, "amount": amount}
+        res = self._event_manager.trigger_event(
+            "on_player_pre_heal", pre_heal_event_data
+        )
 
-#     def apply_healing(self, amount):
-#         pre_heal_event_data = {"player": self, "amount": amount}
-#         res = EVENT_MANAGER.trigger_event("on_player_pre_heal", pre_heal_event_data)
-#         self.health += res["amount"]
+        max_heal = self.get_stat("max_health") - self.get_stat("health")
+        heal_amount = min(amount, max_heal)
+        self.stats["health"].adjust_current(heal_amount)
 
-#         post_heal_event_data = res
-#         EVENT_MANAGER.trigger_event("on_player_post_heal", post_heal_event_data)
+        post_heal_event_data = res
+        post_heal_event_data["heal"] = heal_amount
+        self._event_manager.trigger_event("on_player_post_heal", post_heal_event_data)
 
-#     def take_damage(self, source, amount):
-#         pre_take_damage_event_data = {
-#             "player": self,
-#             "damage": amount,
-#             "source": source,
-#         }
-#         res = EVENT_MANAGER.trigger_event(
-#             "on_player_pre_take_damage", pre_take_damage_event_data
-#         )
+    def take_damage(self, amount, source):
+        pre_take_damage_event_data = {
+            "player": self,
+            "amount": amount,
+            "source": source,
+        }
+        res = self._event_manager.trigger_event(
+            "on_player_pre_take_damage", pre_take_damage_event_data
+        )
 
-#         self.health -= res["damage"]
+        self.stats["health"].adjust_current(-amount)
 
-#         # if the post_take_damage event happens here, now, it will happen before the
-#         # attacker's post_attack event
-
-#         post_take_damage_event_data = res
-#         EVENT_MANAGER.trigger_event(
-#             "on_player_post_take_damage", post_take_damage_event_data
-#         )
+        post_take_damage_event_data = res
+        self._event_manager.trigger_event(
+            "on_player_post_take_damage", post_take_damage_event_data
+        )

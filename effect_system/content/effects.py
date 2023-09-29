@@ -37,7 +37,7 @@ class Effect(ABC):
         if self._targeters:
             self.activate_on_targets(event_data)
         else:
-            self.activate(event_data)
+            self.activate(event_data, None)
 
     def activate_on_targets(self, event_data):
         for target in self.get_targets(event_data):

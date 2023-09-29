@@ -57,3 +57,13 @@ def test_validator_or():
     assert or_validator.validate({"val": 1, "x": 4}) == True
     assert or_validator.validate({"val": 0, "x": 10}) == True
     assert or_validator.validate({"val": 1, "x": 10}) == True
+
+
+def test_validator_property_one_of():
+    arr = []
+    x_in_arr_validator = PropertyOneOf("x", arr)
+
+    assert x_in_arr_validator.validate({"y": 10}) == False
+    assert x_in_arr_validator.validate({"x": 10}) == False
+    arr.append(10)
+    assert x_in_arr_validator.validate({"x": 10}) == True

@@ -50,3 +50,16 @@ class OrValidator(Validator):
 
     def _eval(self, event_data):
         return any([v.validate(event_data) for v in self._validators])
+
+
+class PropertyOneOf(Validator):
+    def __init__(self, property, iter):
+        super().__init__()
+        self.property = property
+        self.iter = iter
+
+    def _eval(self, event_data):
+        if self.property in event_data:
+            return event_data[self.property] in self.iter
+        else:
+            return False

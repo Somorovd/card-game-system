@@ -59,15 +59,19 @@ class Toggle(Trigger):
     def set_init_toggled(self, toggled):
         self._init_toggled = toggled
         self._toggled = toggled
+        return self
 
     def set_toggle_on(self, trigger):
         self._toggle_on = trigger
         trigger.set_parent(self)
+        return self
 
     def set_toggle_off(self, trigger):
         self._toggle_off = trigger
         trigger.set_parent(self)
+        return self
 
     def set_trigger(self, trigger):
         self._trigger = trigger
         trigger.set_parent(self)
+        return self
