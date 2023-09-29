@@ -4,6 +4,11 @@ from . import *
 from ..game.relics import *
 
 
+@pytest.fixture
+def players():
+    return [Player("jay"), Player("larry")]
+
+
 def test_relic_init():
     relic = Relic("test relic")
     assert relic.name == "test relic"
@@ -44,3 +49,12 @@ def test_burning_blood(event_manager, game_manager):
     player.take_damage(50, None)
     event_manager.trigger_event("on_combat_end", {})
     assert player.get_stat("health") == 56
+
+
+def test_akabako(event_manager, players):
+    jay, larry = players
+    jay.equip_relic(Akabako())
+
+    event_manager.trigger_event("on_combat_start", {})
+    jay.attack(larry, 2)
+    assert larry.get_stat("health") == 90

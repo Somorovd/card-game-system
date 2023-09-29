@@ -22,3 +22,11 @@ def test_heal_effect(event_manager):
     heal_effect.arm_trigger(True)
     event_manager.trigger_event("event_name", {})
     assert player.get_stat("health") == 55
+
+
+def test_event_data_update(event_manager):
+    effect = EventDataUpdate("x", 3).set_trigger(EventTrigger("event_name"))
+    effect.arm_trigger(True)
+    event_data = {"x": 10}
+    res = event_manager.trigger_event("event_name", event_data)
+    assert res["x"] == 13

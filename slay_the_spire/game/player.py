@@ -28,7 +28,7 @@ class Player(Statable):
             "on_player_pre_attack", pre_attack_event_data
         )
 
-        target.take_damage(amount, self)
+        target.take_damage(res["amount"], self)
 
         post_attack_event_data = res
         res = self._event_manager.trigger_event(

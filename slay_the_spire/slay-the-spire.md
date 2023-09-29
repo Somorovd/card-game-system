@@ -14,10 +14,10 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 ```python
 Relic("Burning Blood")
 .add_effect(
-	StatUpdate("health", 6)
-	.set_trigger(EventTrigger("on_combat_end"))
+		Heal(6)
+		.set_trigger(EventTrigger("on_combat_end"))
+		.add_targeter(PlayerTargeter())
 )
-.add_targeter(AttachedPlayerTargeter())
 ```
 
 **Ring of the Snake** - At the start of combat, draw 2 additional cards
@@ -32,12 +32,11 @@ Relic("Ring of the Snake")
 .add_effect(
 		EventDataUpdate("number_cards", 2)
 		.set_trigger(
-			Toggle()
-            .set_toggle_on(EventTrigger("on_combat_start"))
-            .set_toggle_off(EventTrigger("on_player_post_draw_cards"))
-			.set_trigger(EventTrigger"on_player_pre_draw_cards"))
-        )
-	)
+				Toggle()
+				.set_toggle_on(EventTrigger("on_combat_start"))
+				.set_toggle_off(EventTrigger("on_player_post_draw_cards"))
+				.set_trigger(EventTrigger"on_player_pre_draw_cards")
+		)
 )
 ```
 
@@ -48,9 +47,9 @@ Try to utilize the Command design pattern to encapsulate instructions within an 
 ```python
 Relic("Cracked Core")
 .add_effect(
-	CommandEffect(PlayerChannel(1, "lightning"))
-	.set_trigger(EventTrigger("on_combat_start"))
-	.add_targeter(AttachedPlayerTargeter())
+		CommandEffect(PlayerChannel(1, "lightning"))
+		.set_trigger(EventTrigger("on_combat_start"))
+		.add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -59,9 +58,9 @@ Relic("Cracked Core")
 ```python
 Relic("Pure Water")
 .add_effect(
-	CommandEffect(PlayerAddToHand(1, CardMiracle()))
-	.set_trigger(EventTrigger("on_combat_start"))
-	.add_targeter(AttachedPlayerTargeter())
+		CommandEffect(PlayerAddToHand(1, CardMiracle()))
+		.set_trigger(EventTrigger("on_combat_start"))
+		.add_targeter(AttachedPlayerTargeter())
 )
 ```
 
@@ -76,7 +75,7 @@ Relic("Akabako")
     .set_trigger(
         Toggle()
         .set_toggle_on(EventTrigger("on_combat_start"))
-	    .set_toggle_off(EventTrigger("on_player_post_attack"))
+	      .set_toggle_off(EventTrigger("on_player_post_attack"))
         .set_trigger(EventTrigger("on_player_pre_attack"))
     )
 )

@@ -1,2 +1,3 @@
 from .relic import Relic
-from .all import *
+from .akabako import Akabako
+from .burning_blood import BurningBlood

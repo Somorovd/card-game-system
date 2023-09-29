@@ -1,9 +1,4 @@
-from effect_system import EventTrigger
-
-from .relic import Relic
-from ..effects import *
-from ..targeters import *
-from ..validators import *
+from .reqs import *
 
 
 class BurningBlood(Relic):
