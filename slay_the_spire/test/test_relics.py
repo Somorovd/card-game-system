@@ -40,7 +40,7 @@ def test_relic_effects_active_after_equip():
 
 def test_burning_blood(event_manager, game_manager):
     player = game_manager.player
-    player.equip_relic(burning_blood)
+    player.equip_relic(BurningBlood())
     player.take_damage(50, None)
     event_manager.trigger_event("on_combat_end", {})
     assert player.get_stat("health") == 56
