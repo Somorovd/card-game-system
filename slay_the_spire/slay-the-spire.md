@@ -179,7 +179,7 @@ Relic("Bronze Scales")
 	.set_trigger(
         EventTrigger(
             "on_player_post_attack",
-		    PropertyEquals("target", AttachedPlayerTargeter())
+		    		PropertyEquals("target", AttachedPlayerTargeter())
             use_default=False
     	)
     )

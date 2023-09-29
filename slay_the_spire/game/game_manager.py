@@ -15,6 +15,7 @@ class GameManager:
         super().__init__()
         self._initialized = True
         self.player = None
+        self.enemies = []
 
     def reset(self):
         super().__init__()

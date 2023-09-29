@@ -58,3 +58,12 @@ def test_akabako(event_manager, players):
     event_manager.trigger_event("on_combat_start", {})
     jay.attack(larry, 2)
     assert larry.get_stat("health") == 90
+
+
+def test_bronze_scales(event_manager, game_manager, players):
+    jay, larry = players
+    jay.equip_relic(BronzeScales())
+
+    game_manager.enemies.append(larry)
+    larry.attack(jay, 2)
+    assert larry.get_stat("health") == 97
