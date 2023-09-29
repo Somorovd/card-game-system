@@ -9,16 +9,8 @@ class CentennialPuzzle(Relic):
             .set_trigger(
                 Toggle()
                 .set_toggle_on(EventTrigger("on_combat_start"))
-                .set_toggle_off(
-                    EventTrigger(
-                        "on_player_post_take_damage", PropertyInRange("amount", min=1)
-                    )
-                )
-                .set_trigger(
-                    EventTrigger(
-                        "on_player_post_take_damage", PropertyInRange("amount", min=1)
-                    )
-                )
+                .set_toggle_off(PlayerTookDamageTrigger())
+                .set_trigger(PlayerTookDamageTrigger())
             )
             .add_targeter(player_targeter)
         )
