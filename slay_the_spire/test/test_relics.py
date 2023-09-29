@@ -72,3 +72,7 @@ def test_bronze_scales(event_manager, game_manager, players):
     game_manager.enemies.append(larry)
     larry.attack(jay, 2)
     assert larry.get_stat("health") == 97
+
+    karen = Player("karen")
+    jay.take_damage(7, karen)
+    assert karen.get_stat("health") == 100

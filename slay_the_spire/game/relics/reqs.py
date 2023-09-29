@@ -4,7 +4,6 @@ from effect_system.content.triggers import *
 from effect_system.content.validators import *
 
 from .relic import Relic
-from ..commands import *
 from ..effects import *
 from ..targeters import *
 from ..triggers import *
