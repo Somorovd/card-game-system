@@ -7,6 +7,7 @@ class Player(Statable):
         super().__init__()
         self.name = name
         self.relics = []
+        self.hand = []
         self._event_manager = EventManager()
         self.init_stats()
 
@@ -64,4 +65,17 @@ class Player(Statable):
         post_take_damage_event_data = res
         self._event_manager.trigger_event(
             "on_player_post_take_damage", post_take_damage_event_data
+        )
+
+    def draw_cards(self, count):
+        pre_draw_event_data = {"player": self, "count": count}
+        res = self._event_manager.trigger_event(
+            "on_player_pre_draw_cards", pre_draw_event_data
+        )
+
+        self.hand.extend(["card"] * res["count"])
+
+        post_draw_event_data = res
+        res = self._event_manager.trigger_event(
+            "on_player_post_draw_cards", post_draw_event_data
         )

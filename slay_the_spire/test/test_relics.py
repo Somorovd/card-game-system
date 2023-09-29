@@ -76,3 +76,22 @@ def test_bronze_scales(event_manager, game_manager, players):
     karen = Player("karen")
     jay.take_damage(7, karen)
     assert karen.get_stat("health") == 100
+
+
+def test_ring_of_the_snake(event_manager, game_manager, players):
+    jay, larry = players
+    jay.equip_relic(RingOfTheSnake())
+
+    jay.draw_cards(1)
+    assert len(jay.hand) == 1
+
+    event_manager.trigger_event("on_combat_start", {})
+    jay.draw_cards(1)
+    assert len(jay.hand) == 4
+
+    jay.draw_cards(1)
+    assert len(jay.hand) == 5
+
+    event_manager.trigger_event("on_combat_start", {})
+    jay.draw_cards(1)
+    assert len(jay.hand) == 8
