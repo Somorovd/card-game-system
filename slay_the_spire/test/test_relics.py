@@ -118,3 +118,20 @@ def test_centennial_puzzle(event_manager, game_manager, players):
     event_manager.trigger_event("on_combat_start", {})
     larry.attack(jay, 2)
     assert len(jay.hand) == 6
+
+
+def test_maw_bank(event_manager, game_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+    jay.equip_relic(MawBank())
+
+    event_manager.trigger_event("on_player_climb_floor", {})
+    assert jay.get_stat("gold") == 12
+
+    event_manager.trigger_event("on_player_climb_floor", {})
+    event_manager.trigger_event("on_player_climb_floor", {})
+    assert jay.get_stat("gold") == 36
+
+    event_manager.trigger_event("on_player_shop_purchase", {})
+    event_manager.trigger_event("on_player_climb_floor", {})
+    assert jay.get_stat("gold") == 36

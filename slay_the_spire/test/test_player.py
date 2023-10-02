@@ -13,6 +13,7 @@ def test_player_init(event_manager):
     assert player.name == "jay"
     assert player.get_stat("health") == 100
     assert player.get_stat("max_health") == 100
+    assert player.get_stat("gold") == 0
     assert player._event_manager == event_manager
     assert len(player.relics) == 0
     assert len(player.hand) == 0

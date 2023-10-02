@@ -3,4 +3,5 @@ from .akabako import Akabako
 from .bronze_scales import BronzeScales
 from .burning_blood import BurningBlood
 from .centennial_puzzle import CentennialPuzzle
+from .maw_bank import MawBank
 from .ring_of_the_snake import RingOfTheSnake

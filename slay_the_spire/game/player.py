@@ -14,6 +14,7 @@ class Player(Statable):
     def init_stats(self):
         self.add_stat("health", 100)
         self.add_stat("max_health", 100)
+        self.add_stat("gold", 0)
 
     def equip_relic(self, relic):
         self.relics.append(relic)
