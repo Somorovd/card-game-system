@@ -135,3 +135,14 @@ def test_maw_bank(event_manager, game_manager, players):
     event_manager.trigger_event("on_player_shop_purchase", {})
     event_manager.trigger_event("on_player_climb_floor", {})
     assert jay.get_stat("gold") == 36
+
+
+def test_strawberry(event_manager, game_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+
+    assert jay.get_stat("max_health") == 100
+    jay.equip_relic(Strawberry())
+    assert jay.get_stat("max_health") == 107
+    jay.equip_relic(Relic("dummy"))
+    assert jay.get_stat("max_health") == 107
