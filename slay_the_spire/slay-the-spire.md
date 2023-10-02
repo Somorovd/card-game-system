@@ -7,16 +7,15 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 
 ## Relics
 
-## Completed
+### Implemented
 
-**Burning Blood** - At the end of combat, heal 6 HP
-**Ring of the Snake** - At the start of combat, draw 2 additional cards
-**Akabeko** - Your first attack each combat deals 8 additional damage
-**Bronze Scales** - Whenever you take damage, deal 3 damage back.
-**Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
-**Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
-**Strawberry** - Raise your Max HP by 7
-
+- **Burning Blood** - At the end of combat, heal 6 HP.
+- **Ring of the Snake** - At the start of combat, draw 2 additional cards.
+- **Akabeko** - Your first attack each combat deals 8 additional damage.
+- **Bronze Scales** - Whenever you take damage, deal 3 damage back.
+- **Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
+- **Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
+- **Strawberry** - Raise your Max HP by 7.
 
 ### Starter
 
