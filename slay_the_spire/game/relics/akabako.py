@@ -1,4 +1,5 @@
-from .reqs import *
+from .reqs import Relic
+from .reqs import EventDataUpdate, Toggle, EventTrigger
 
 
 class Akabako(Relic):

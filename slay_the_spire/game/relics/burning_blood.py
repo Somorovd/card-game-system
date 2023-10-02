@@ -1,4 +1,5 @@
-from .reqs import *
+from .reqs import Relic
+from .reqs import Heal, EventTrigger, player_targeter
 
 
 class BurningBlood(Relic):

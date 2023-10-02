@@ -7,38 +7,18 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 
 ## Relics
 
-### Starter
+## Completed
 
 **Burning Blood** - At the end of combat, heal 6 HP
-
-```python
-Relic("Burning Blood")
-.add_effect(
-		Heal(6)
-		.set_trigger(EventTrigger("on_combat_end"))
-		.add_targeter(PlayerTargeter())
-)
-```
-
 **Ring of the Snake** - At the start of combat, draw 2 additional cards
+**Akabeko** - Your first attack each combat deals 8 additional damage
+**Bronze Scales** - Whenever you take damage, deal 3 damage back.
+**Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
+**Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
+**Strawberry** - Raise your Max HP by 7
 
-_ALT: The first time you draw cards each combat, draw 2 additional cards._
 
-- Option 1: Combine effects that add and remove an effect.
-- Option 2: A toggle effect that enables and disables an effect.
-
-```python
-Relic("Ring of the Snake")
-.add_effect(
-		EventDataUpdate("number_cards", 2)
-		.set_trigger(
-				Toggle()
-				.set_toggle_on(EventTrigger("on_combat_start"))
-				.set_toggle_off(EventTrigger("on_player_post_draw_cards"))
-				.set_trigger(EventTrigger"on_player_pre_draw_cards")
-		)
-)
-```
+### Starter
 
 **Cracked Core** - At the start of each combat, channel 1 Lightning orb
 
@@ -65,21 +45,6 @@ Relic("Pure Water")
 ```
 
 ### Common
-
-**Akabeko** - Your first attack each combat deals 8 additional damage
-
-```python
-Relic("Akabako")
-.add_effect(
-    EventDataUpdate("damage", 8)
-    .set_trigger(
-        Toggle()
-        .set_toggle_on(EventTrigger("on_combat_start"))
-	      .set_toggle_off(EventTrigger("on_player_post_attack"))
-        .set_trigger(EventTrigger("on_player_pre_attack"))
-    )
-)
-```
 
 **Anchor** - Start each combat with 10 block
 
@@ -165,47 +130,6 @@ _See **Ring of the Snake**_
 
 _See **Burning Blood**_
 
-**Bronze Scales** - Whenever you take damage, deal 3 damage back.
-
-_ALT: After you are attacked, deal 3 damage back_
-
-This relic requires a way of invoking a method on the target.
-COMMANAD PATTERN?
-
-```python
-Relic("Bronze Scales")
-.add_effect(
-	CommandEffect(PlayerTakeDamage(self, 3)) # source, amount
-	.set_trigger(
-        EventTrigger(
-            "on_player_post_attack",
-		    		PropertyEquals("target", AttachedPlayerTargeter())
-            use_default=False
-    	)
-    )
-	.add_targeter(EventDataTargeter("player"))
-)
-```
-
-**Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
-
-```python
-Relic("Centennial Puzzle")
-.add_effect(
-    CommandEffect(PlayerDrawCards(3))
-    .set_trigger(
-        Toggle()
-        .add_toggle_on(EventTrigger("on_combat_start"))
-        .add_toggle_off(
-            EventTrigger(
-                "on_player_post_take_damage",
-                PropertyInRange("damage", min=1)
-            )
-        )
-        .set_trigger(EventTrigger("on_player_post_take_damage"))
-    )
-)
-```
 
 **Ceramic Fish** - Whenever you add a card to your deck, gain 9 gold.
 
@@ -248,21 +172,7 @@ _Requires some interaction with the game systems. See **Tiny Chest** for some id
 
 _See **Ancient Tea Set**_
 
-**Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
 
-```python
-Relic("Maw Bank")
-.add_effect(
-    StatUpdate("gold", 12)
-    .set_trigger(
-	    Toggle()
-	    .set_toggle(True)
-	    .set_toggle_off(EventTrigger("on_player_shop_purchase"))
-        .set_trigger(EventTrigger("on_player_climb_floor")))
-	)
-    .add_targeter(AttachedPlayerTargeter())
-)
-```
 
 **Meal Ticket** - Whenever you enter a shop, heal 15 HP.
 
@@ -415,22 +325,6 @@ Relic("Regal Pillow")
 
 - Option 1: Commands to interact with the shop removal prices now and after each purchase
 - Option 2: Stratgey for how the shop prices are calculated.
-
-**Strawberry** - Raise your Max HP by 7
-
-```python
-Relic("Strawberry")
-.add_effect(
-	NTimes(1, StatModifierEffect("max_health", 7))
-	.set_trigger(
-        EventTrigger(
-            "on_player_add_relic",
-            AttachedRelicValidator()
-        )
-	)
-	.add_targeter(AttachedPlayerTargeter())
-)
-```
 
 **The Boot** - Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
 

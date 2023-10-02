@@ -76,3 +76,73 @@ def test_bronze_scales(event_manager, game_manager, players):
     karen = Player("karen")
     jay.take_damage(7, karen)
     assert karen.get_stat("health") == 100
+
+
+def test_ring_of_the_snake(event_manager, game_manager, players):
+    jay, larry = players
+    jay.equip_relic(RingOfTheSnake())
+
+    jay.draw_cards(1)
+    assert len(jay.hand) == 1
+
+    event_manager.trigger_event("on_combat_start", {})
+    jay.draw_cards(1)
+    assert len(jay.hand) == 4
+
+    jay.draw_cards(1)
+    assert len(jay.hand) == 5
+
+    event_manager.trigger_event("on_combat_start", {})
+    jay.draw_cards(1)
+    assert len(jay.hand) == 8
+
+
+def test_centennial_puzzle(event_manager, game_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+    jay.equip_relic(CentennialPuzzle())
+
+    larry.attack(jay, 4)
+    assert len(jay.hand) == 0
+
+    event_manager.trigger_event("on_combat_start", {})
+    larry.attack(jay, 0)
+    assert len(jay.hand) == 0
+
+    larry.attack(jay, 2)
+    assert len(jay.hand) == 3
+
+    larry.attack(jay, 2)
+    assert len(jay.hand) == 3
+
+    event_manager.trigger_event("on_combat_start", {})
+    larry.attack(jay, 2)
+    assert len(jay.hand) == 6
+
+
+def test_maw_bank(event_manager, game_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+    jay.equip_relic(MawBank())
+
+    event_manager.trigger_event("on_player_climb_floor", {})
+    assert jay.get_stat("gold") == 12
+
+    event_manager.trigger_event("on_player_climb_floor", {})
+    event_manager.trigger_event("on_player_climb_floor", {})
+    assert jay.get_stat("gold") == 36
+
+    event_manager.trigger_event("on_player_shop_purchase", {})
+    event_manager.trigger_event("on_player_climb_floor", {})
+    assert jay.get_stat("gold") == 36
+
+
+def test_strawberry(event_manager, game_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+
+    assert jay.get_stat("max_health") == 100
+    jay.equip_relic(Strawberry())
+    assert jay.get_stat("max_health") == 107
+    jay.equip_relic(Relic("dummy"))
+    assert jay.get_stat("max_health") == 107

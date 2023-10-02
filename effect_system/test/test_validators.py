@@ -67,3 +67,14 @@ def test_validator_property_one_of():
     assert x_in_arr_validator.validate({"x": 10}) == False
     arr.append(10)
     assert x_in_arr_validator.validate({"x": 10}) == True
+
+
+def test_property_in_range():
+    x_one_to_ten_validator = PropertyInRange("x", min=1, max=10)
+    assert x_one_to_ten_validator.validate({}) == False
+    assert x_one_to_ten_validator.validate({"y": 5}) == False
+    assert x_one_to_ten_validator.validate({"x": 0}) == False
+    assert x_one_to_ten_validator.validate({"x": 1}) == True
+    assert x_one_to_ten_validator.validate({"x": 5}) == True
+    assert x_one_to_ten_validator.validate({"x": 10}) == True
+    assert x_one_to_ten_validator.validate({"x": 20}) == False
