@@ -1,4 +1,11 @@
-from .reqs import *
+from .reqs import Relic
+from .reqs import (
+    TakeDamage,
+    EventTrigger,
+    PropertyOneOf,
+    GameManager,
+    EventDataPropertyTargeter,
+)
 
 
 class BronzeScales(Relic):

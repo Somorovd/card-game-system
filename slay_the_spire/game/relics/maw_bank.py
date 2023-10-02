@@ -1,4 +1,5 @@
-from .reqs import *
+from .reqs import Relic
+from .reqs import StatUpdate, Toggle, EventTrigger, player_targeter
 
 
 class MawBank(Relic):

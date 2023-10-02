@@ -1,4 +1,11 @@
-from .reqs import *
+from .reqs import Relic
+from .reqs import (
+    DrawCards,
+    Toggle,
+    EventTrigger,
+    PlayerTookDamageTrigger,
+    player_targeter,
+)
 
 
 class CentennialPuzzle(Relic):
