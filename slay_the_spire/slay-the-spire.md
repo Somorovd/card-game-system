@@ -15,6 +15,8 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 **Bronze Scales** - Whenever you take damage, deal 3 damage back.
 **Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
 **Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
+**Strawberry** - Raise your Max HP by 7
+
 
 ### Starter
 
@@ -323,22 +325,6 @@ Relic("Regal Pillow")
 
 - Option 1: Commands to interact with the shop removal prices now and after each purchase
 - Option 2: Stratgey for how the shop prices are calculated.
-
-**Strawberry** - Raise your Max HP by 7
-
-```python
-Relic("Strawberry")
-.add_effect(
-	NTimes(1, StatModifierEffect("max_health", 7))
-	.set_trigger(
-        EventTrigger(
-            "on_player_add_relic",
-            AttachedRelicValidator()
-        )
-	)
-	.add_targeter(AttachedPlayerTargeter())
-)
-```
 
 **The Boot** - Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
 
