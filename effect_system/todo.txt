@@ -1,14 +1,9 @@
 equipment (A) that adds 2 health to all players
 equipment (B) that modifies A, double effect for [condition]
-	- Conditional modifyer, not a strict modifyer.
+	- Conditional modifier, not a strict modifier.
 	- Condition application may change on an individual basis over time
 
-
 Turn events into objects with predefined properties
-Validate events on relics and make sure that event is compatible
-Some relics might have predefined connected events
-*   Relic that modify relic need to have a "on_player_add_relic" to update new relics
-
 
 Not a huge fan of the equip / unequip of the change timing effect.
 Could switch to an event based system as well.
