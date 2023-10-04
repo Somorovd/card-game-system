@@ -8,6 +8,7 @@ class Player(Statable):
         self.name = name
         self.relics = []
         self.hand = []
+        self.potions = []
         self._event_manager = EventManager()
         self.init_stats()
 
@@ -66,6 +67,22 @@ class Player(Statable):
         post_take_damage_event_data = res
         self._event_manager.trigger_event(
             "on_player_post_take_damage", post_take_damage_event_data
+        )
+
+    def drink_potion(self, potion):
+        pre_drink_potion_event_data = {
+            "player": self,
+            "potion": potion,
+        }
+        res = self._event_manager.trigger_event(
+            "on_player_pre_pre_drink_potion", pre_drink_potion_event_data
+        )
+
+        # potion does a thing
+
+        post_drink_potion_event_data = res
+        self._event_manager.trigger_event(
+            "on_player_post_drink_potion", post_drink_potion_event_data
         )
 
     def draw_cards(self, count):

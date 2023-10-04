@@ -148,10 +148,23 @@ def test_strawberry(event_manager, game_manager, players):
     assert jay.get_stat("max_health") == 107
 
 
-def test_boot(event_manager, players):
+def test_the_boot(event_manager, players):
     jay, larry = players
     jay.equip_relic(TheBoot())
 
     event_data = {"amount": 2}
     res = event_manager.trigger_event("on_enemy_pre_take_damage", event_data)
     assert res["amount"] == 5
+
+
+def test_toy_ornithopter(event_manager, game_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+
+    jay.take_damage(50, None)
+    assert jay.get_stat("health") == 50
+    jay.drink_potion(None)
+    assert jay.get_stat("health") == 50
+    jay.equip_relic(ToyOrnithopter())
+    jay.drink_potion(None)
+    assert jay.get_stat("health") == 55

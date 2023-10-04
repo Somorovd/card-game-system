@@ -9,13 +9,16 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 
 ### Implemented
 
-- **Burning Blood** - At the end of combat, heal 6 HP.
-- **Ring of the Snake** - At the start of combat, draw 2 additional cards.
-- **Akabeko** - Your first attack each combat deals 8 additional damage.
+- **Akabako** - Your first attack each combat deals 8 additional damage.
 - **Bronze Scales** - Whenever you take damage, deal 3 damage back.
+- **Burning Blood** - At the end of combat, heal 6 HP.
 - **Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
 - **Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
+- **Ring of the Snake** - At the start of combat, draw 2 additional cards.
 - **Strawberry** - Raise your Max HP by 7.
+- **The Boot** - Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
+- **Toy Ornithopter** - Whenever you use potion, heal 5 HP.
+
 
 ### Starter
 
@@ -325,31 +328,6 @@ Relic("Regal Pillow")
 - Option 1: Commands to interact with the shop removal prices now and after each purchase
 - Option 2: Stratgey for how the shop prices are calculated.
 
-**The Boot** - Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
-
-Raises the question of how best to define logical combinations of validators.
-Here I assume that all validators passed in to `.add_event_validator` must result in True to apply the effect. The `Or()` validator would return True if at least one of its validators is True.
-
-What about effects that trigger off of multiple events??
-
-```python
-Relic("The Boot")
-.add_effect(
-	EventDataUpdate("damage", MaxOp(5))
-	.set_trigger(
-        EventTrigger(
-            "on_player_pre_take_damage",
-            AttachedPlayerValidator().invert(),
-            Or(
-                PropertyEquals("source", AttachedPlayerTargeter()),
-                PropertyEquals("source", AttachedPlayerRelicTargeter()),
-            )
-            use_default=False
-        )
-	)
-)
-```
-
 **Tiny Chest** - Every 4th ? room is a Treasure room.
 
 - Option 1: Command to load the type of room
@@ -383,17 +361,6 @@ Relic("Tiny Chest")
 	)
 )
 ```
-
-**Toy Ornithopter** - Whenever you use potion, heal 5 HP.
-
-```python
-Relic("Toy Ornithopter")
-.add_effect(
-	Heal(5)
-	.set_trigger(EventTrigger("on_player_pre_potion"))
-)
-```
-
 **Vajra** - At the start of each combat, gain 1 Strength
 
 _See **Bag of Marbles**_
