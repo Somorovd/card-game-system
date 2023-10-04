@@ -1,6 +1,7 @@
 import pytest
 from effect_system import EventManager
 from ..game.game_manager import GameManager
+from ..game.card_manager import CardManager
 from ..game.player import Player
 
 
@@ -17,6 +18,13 @@ def game_manager():
     game_manager.reset()
     game_manager.player = Player("main")
     return GameManager()
+
+
+@pytest.fixture(autouse=True)
+def card_manager():
+    card_manager = CardManager()
+    card_manager.reset()
+    return CardManager()
 
 
 @pytest.fixture

@@ -1,4 +1,5 @@
 from effect_system import EventManager
+from ..game.card_manager import CardManager
 from .statable import Statable, Stat
 
 
@@ -7,7 +8,6 @@ class Player(Statable):
         super().__init__()
         self.name = name
         self.relics = []
-        self.hand = []
         self.potions = []
         self._event_manager = EventManager()
         self.init_stats()
@@ -83,17 +83,4 @@ class Player(Statable):
         post_drink_potion_event_data = res
         self._event_manager.trigger_event(
             "on_player_post_drink_potion", post_drink_potion_event_data
-        )
-
-    def draw_cards(self, count):
-        pre_draw_event_data = {"player": self, "count": count}
-        res = self._event_manager.trigger_event(
-            "on_player_pre_draw_cards", pre_draw_event_data
-        )
-
-        self.hand.extend(["card"] * res["count"])
-
-        post_draw_event_data = res
-        res = self._event_manager.trigger_event(
-            "on_player_post_draw_cards", post_draw_event_data
         )

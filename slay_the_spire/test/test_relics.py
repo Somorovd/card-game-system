@@ -78,46 +78,48 @@ def test_bronze_scales(event_manager, game_manager, players):
     assert karen.get_stat("health") == 100
 
 
-def test_ring_of_the_snake(event_manager, game_manager, players):
+def test_ring_of_the_snake(event_manager, card_manager, players):
     jay, larry = players
     jay.equip_relic(RingOfTheSnake())
+    card_manager.draw = [None] * 10
 
-    jay.draw_cards(1)
-    assert len(jay.hand) == 1
-
-    event_manager.trigger_event("on_combat_start", {})
-    jay.draw_cards(1)
-    assert len(jay.hand) == 4
-
-    jay.draw_cards(1)
-    assert len(jay.hand) == 5
+    card_manager.draw_cards(1)
+    assert len(card_manager.hand) == 1
 
     event_manager.trigger_event("on_combat_start", {})
-    jay.draw_cards(1)
-    assert len(jay.hand) == 8
+    card_manager.draw_cards(1)
+    assert len(card_manager.hand) == 4
+
+    card_manager.draw_cards(1)
+    assert len(card_manager.hand) == 5
+
+    event_manager.trigger_event("on_combat_start", {})
+    card_manager.draw_cards(1)
+    assert len(card_manager.hand) == 8
 
 
-def test_centennial_puzzle(event_manager, game_manager, players):
+def test_centennial_puzzle(event_manager, card_manager, players):
     jay, larry = players
     game_manager.player = jay
     jay.equip_relic(CentennialPuzzle())
+    card_manager.draw = [None] * 10
 
     larry.attack(jay, 4)
-    assert len(jay.hand) == 0
+    assert len(card_manager.hand) == 0
 
     event_manager.trigger_event("on_combat_start", {})
     larry.attack(jay, 0)
-    assert len(jay.hand) == 0
+    assert len(card_manager.hand) == 0
 
     larry.attack(jay, 2)
-    assert len(jay.hand) == 3
+    assert len(card_manager.hand) == 3
 
     larry.attack(jay, 2)
-    assert len(jay.hand) == 3
+    assert len(card_manager.hand) == 3
 
     event_manager.trigger_event("on_combat_start", {})
     larry.attack(jay, 2)
-    assert len(jay.hand) == 6
+    assert len(card_manager.hand) == 6
 
 
 def test_maw_bank(event_manager, game_manager, players):
