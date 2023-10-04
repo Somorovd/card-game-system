@@ -47,6 +47,7 @@ def test_take_damage_effect(event_manager):
 
 
 def test_draw_cards_effect(event_manager, card_manager):
+    card_manager.draw = [None] * 5
     draw_effect = DrawCards(3)
     draw_effect.set_trigger(EventTrigger("event_name"))
     draw_effect.arm_trigger(True)

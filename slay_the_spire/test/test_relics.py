@@ -81,6 +81,7 @@ def test_bronze_scales(event_manager, game_manager, players):
 def test_ring_of_the_snake(event_manager, card_manager, players):
     jay, larry = players
     jay.equip_relic(RingOfTheSnake())
+    card_manager.draw = [None] * 10
 
     card_manager.draw_cards(1)
     assert len(card_manager.hand) == 1
@@ -101,6 +102,7 @@ def test_centennial_puzzle(event_manager, card_manager, players):
     jay, larry = players
     game_manager.player = jay
     jay.equip_relic(CentennialPuzzle())
+    card_manager.draw = [None] * 10
 
     larry.attack(jay, 4)
     assert len(card_manager.hand) == 0
