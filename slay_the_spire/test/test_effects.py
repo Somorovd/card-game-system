@@ -1,4 +1,5 @@
 from effect_system import EventTrigger
+from effect_system.content.operations import *
 
 from . import *
 from ..game.player import Player
@@ -9,7 +10,7 @@ from ..game.targeters import *
 
 
 def test_event_data_update(event_manager):
-    effect = EventDataUpdate("x", 3).set_trigger(EventTrigger("event_name"))
+    effect = EventDataUpdate("x", AddOp(3)).set_trigger(EventTrigger("event_name"))
     effect.arm_trigger(True)
     event_data = {"x": 10}
     res = event_manager.trigger_event("event_name", event_data)
