@@ -9,7 +9,7 @@ class RingOfTheSnake(Relic):
             EventDataUpdate("count", 2).set_trigger(
                 Toggle()
                 .set_toggle_on(EventTrigger("on_combat_start"))
-                .set_toggle_off(EventTrigger("on_player_post_draw_cards"))
-                .set_trigger(EventTrigger("on_player_pre_draw_cards"))
+                .set_toggle_off(EventTrigger("on_post_draw_cards"))
+                .set_trigger(EventTrigger("on_pre_draw_cards"))
             )
         )

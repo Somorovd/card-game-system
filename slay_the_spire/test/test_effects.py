@@ -2,7 +2,6 @@ from effect_system import EventTrigger
 
 from . import *
 from ..game.player import Player
-from ..game.relics import Relic
 from ..game.effects import *
 
 from ..game.targeters import *
@@ -47,16 +46,9 @@ def test_take_damage_effect(event_manager):
     assert player.get_stat("health") == 95
 
 
-def test_draw_cards_effect(event_manager):
-    class TestTargeter(Targeter):
-        def get_targets(self, event_data):
-            return [player]
-
-    player = Player("jay")
-    assert TestTargeter().get_targets({})[0] == player
-
+def test_draw_cards_effect(event_manager, card_manager):
     draw_effect = DrawCards(3)
-    draw_effect.set_trigger(EventTrigger("event_name")).add_targeter(TestTargeter())
+    draw_effect.set_trigger(EventTrigger("event_name"))
     draw_effect.arm_trigger(True)
     event_manager.trigger_event("event_name", {})
-    assert len(player.hand) == 3
+    assert len(card_manager.hand) == 3

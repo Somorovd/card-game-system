@@ -19,4 +19,5 @@ class GameManager:
         self.enemies = []
 
     def reset(self):
-        super().__init__()
+        self._initialized = False
+        self.__init__()

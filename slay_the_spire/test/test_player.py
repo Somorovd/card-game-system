@@ -16,7 +16,6 @@ def test_player_init(event_manager):
     assert player.get_stat("gold") == 0
     assert player._event_manager == event_manager
     assert len(player.relics) == 0
-    assert len(player.hand) == 0
 
 
 def test_player_attack_damage_heal(players):
@@ -130,23 +129,3 @@ def test_equip_relic_to_player(test_listener, players):
     assert len(equip_relic_data) == 2
     assert equip_relic_data["player"] == jay
     assert equip_relic_data["relic"] == relic
-
-
-def test_draw_cards(test_listener, players):
-    jay, larry = players
-    test_listener.create_listener("on_player_pre_draw_cards")
-    test_listener.create_listener("on_player_post_draw_cards")
-
-    jay.draw_cards(2)
-    assert len(jay.hand) == 2
-    assert len(test_listener.events) == 2
-    assert test_listener.events[0][0] == "on_player_pre_draw_cards"
-    assert test_listener.events[1][0] == "on_player_post_draw_cards"
-
-    pre_draw_data = test_listener.events[0][1]
-    post_draw_data = test_listener.events[1][1]
-
-    assert pre_draw_data["player"] == jay
-    assert pre_draw_data["count"] == 2
-    assert post_draw_data["player"] == jay
-    assert post_draw_data["count"] == 2
