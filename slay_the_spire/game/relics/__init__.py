@@ -6,3 +6,4 @@ from .centennial_puzzle import CentennialPuzzle
 from .maw_bank import MawBank
 from .ring_of_the_snake import RingOfTheSnake
 from .strawberry import Strawberry
+from .the_boot import TheBoot

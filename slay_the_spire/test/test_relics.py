@@ -146,3 +146,12 @@ def test_strawberry(event_manager, game_manager, players):
     assert jay.get_stat("max_health") == 107
     jay.equip_relic(Relic("dummy"))
     assert jay.get_stat("max_health") == 107
+
+
+def test_boot(event_manager, players):
+    jay, larry = players
+    jay.equip_relic(TheBoot())
+
+    event_data = {"amount": 2}
+    res = event_manager.trigger_event("on_enemy_pre_take_damage", event_data)
+    assert res["amount"] == 5
