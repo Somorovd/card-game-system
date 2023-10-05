@@ -102,3 +102,53 @@ def test_draw_cards_full_deck(card_manager, test_listener):
     assert post_draw_data["count"] == 2
     assert card1 in post_draw_data["cards"]
     assert card2 in post_draw_data["cards"]
+
+
+def test_move_card(card_manager):
+    card = Card("", None, None)
+    card_manager.hand.append(card)
+    card_manager.move_card(card, CardLocation.HAND, CardLocation.DISCARD)
+    assert len(card_manager.hand) == 0
+    assert len(card_manager.discard) == 1
+    assert card_manager.discard[0] == card
+
+    card_manager.move_card(card, CardLocation.DISCARD, CardLocation.DRAW)
+    assert len(card_manager.discard) == 0
+    assert len(card_manager.draw) == 1
+    assert card_manager.draw[0] == card
+
+    with pytest.raises(KeyError):
+        card_manager.move_card(card, CardLocation.DISCARD, CardLocation.DRAW)
+
+
+def test_play_card(game_manager, card_manager, test_listener):
+    from ..game.targeters import player_targeter
+    from ..game.effects import TakeDamage
+
+    jay = Player("jay")
+    game_manager.player = jay
+
+    card1 = Card("card1", CardType.ATTACK, 1).add_effect(
+        TakeDamage(10).add_targeter(player_targeter)
+    )
+    card_manager.add_card(card1, CardLocation.HAND)
+
+    test_listener.create_listener("on_pre_play_card")
+    test_listener.create_listener("on_post_play_card")
+
+    card_manager.play_card(card1)
+    assert len(test_listener.events) == 2
+    assert test_listener.events[0][0] == "on_pre_play_card"
+    assert test_listener.events[1][0] == "on_post_play_card"
+    assert len(card_manager.hand) == 0
+    assert len(card_manager.discard) == 1
+    assert jay.get_stat("energy") == 2
+    assert jay.get_stat("health") == 90
+
+    card_manager.play_card(
+        card1, from_location=CardLocation.DISCARD, to_location=CardLocation.EXHAUST
+    )
+    assert len(card_manager.discard) == 0
+    assert len(card_manager.exhaust) == 1
+    assert jay.get_stat("energy") == 1
+    assert jay.get_stat("health") == 80

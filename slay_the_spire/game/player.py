@@ -16,6 +16,7 @@ class Player(Statable):
         self.add_stat("health", 100)
         self.add_stat("max_health", 100)
         self.add_stat("gold", 0)
+        self.add_stat("energy", 3)
 
     def equip_relic(self, relic):
         self.relics.append(relic)
@@ -68,6 +69,9 @@ class Player(Statable):
         self._event_manager.trigger_event(
             "on_player_post_take_damage", post_take_damage_event_data
         )
+
+    def pay_energy(self, amount):
+        self.stats["energy"].adjust_current(-amount)
 
     def drink_potion(self, potion):
         pre_drink_potion_event_data = {

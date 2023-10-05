@@ -14,6 +14,7 @@ def test_player_init(event_manager):
     assert player.get_stat("health") == 100
     assert player.get_stat("max_health") == 100
     assert player.get_stat("gold") == 0
+    assert player.get_stat("energy") == 3
     assert player._event_manager == event_manager
     assert len(player.relics) == 0
 
@@ -129,3 +130,11 @@ def test_equip_relic_to_player(test_listener, players):
     assert len(equip_relic_data) == 2
     assert equip_relic_data["player"] == jay
     assert equip_relic_data["relic"] == relic
+
+
+def test_player_pay_energy(players):
+    jay, larry = players
+    jay.pay_energy(1)
+    assert jay.get_stat("energy") == 2
+    jay.pay_energy(2)
+    assert jay.get_stat("energy") == 0

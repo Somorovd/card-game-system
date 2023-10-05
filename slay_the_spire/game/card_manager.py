@@ -2,6 +2,7 @@ from random import random
 from enum import Enum
 
 from effect_system.content.event_manager import EventManager
+from ..game.game_manager import GameManager
 
 
 class CardLocation(Enum):
@@ -29,6 +30,7 @@ class CardManager:
         super().__init__()
         self._initialized = True
         self._event_manager = EventManager()
+        self._game_manager = GameManager()
         self.deck = []
         self.draw = []
         self.hand = []
@@ -85,6 +87,32 @@ class CardManager:
             "on_post_remove_card", post_remove_card_event_data
         )
 
+    def play_card(
+        self, card, from_location=CardLocation.HAND, to_location=CardLocation.DISCARD
+    ):
+        if card not in self._list_from_location(from_location):
+            raise KeyError("Card cannot be played from this location")
+
+        pre_play_card_event_data = {
+            "card": card,
+            "type": card.type,
+            "cost": card.get_stat("cost"),
+            "from": from_location,
+            "to": to_location,
+        }
+        res = self._event_manager.trigger_event(
+            "on_pre_play_card", pre_play_card_event_data
+        )
+
+        self.move_card(card, from_location, to_location)
+        self._game_manager.player.pay_energy(card.get_stat("cost"))
+        card.play()
+
+        post_play_card_event_data = res
+        res = self._event_manager.trigger_event(
+            "on_post_play_card", post_play_card_event_data
+        )
+
     def shuffle(self):
         self.deck.sort(key=lambda x: random())
 
@@ -103,3 +131,9 @@ class CardManager:
         res = self._event_manager.trigger_event(
             "on_post_draw_cards", post_draw_event_data
         )
+
+    def move_card(self, card, from_location, to_location):
+        if card not in self._list_from_location(from_location):
+            raise KeyError("Card does not exist at this location")
+        self._list_from_location(from_location).remove(card)
+        self._list_from_location(to_location).append(card)
