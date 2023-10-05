@@ -10,6 +10,7 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 ### Implemented
 
 - **Akabako** - Your first attack each combat deals 8 additional damage.
+- **Art of War** - If you do not play any Attacks during your turn, gain an extra energy next turn
 - **Bronze Scales** - Whenever you take damage, deal 3 damage back.
 - **Burning Blood** - At the end of combat, heal 6 HP.
 - **Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
@@ -70,27 +71,6 @@ Relic("Ancient Tea Set")
         .add_seq(EventTrigger("on_player_enter_rest_site"))
         .add_seq(EventTrigger("on_combat_start"))
     )
-	.add_targeter(AttachedPlayerTargeter())
-)
-```
-
-**Art of War** - If you do not play any Attacks during your turn, gain an extra energy next turn
-
-```python
-Relic("Art of War")
-.add_effect(
-	StatUpdate("energy", 1)
-	.set_trigger(
-		Sequence()
-		.add_seq(EventTrigger("on_player_start_turn"))
-		.add_seq(EventTrigger("on_player_end_turn"))
-		.add_reset(
-            EventTrigger(
-                "on_player_play_card",
-                 PropertyEquals("type", "attack")
-            )
-        )
-	)
 	.add_targeter(AttachedPlayerTargeter())
 )
 ```

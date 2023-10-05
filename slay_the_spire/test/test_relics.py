@@ -170,3 +170,34 @@ def test_toy_ornithopter(event_manager, game_manager, players):
     jay.equip_relic(ToyOrnithopter())
     jay.drink_potion(None)
     assert jay.get_stat("health") == 55
+
+
+def test_art_of_war(event_manager, game_manager, card_manager, players, test_listener):
+    from ..game.card import Card, CardType
+    from ..game.card_manager import CardLocation
+
+    jay, larry = players
+    game_manager.player = jay
+
+    attack_card = Card("attack", CardType.ATTACK, 0)
+    power_card = Card("attack", CardType.POWER, 0)
+    card_manager.hand = [attack_card, power_card]
+
+    jay.equip_relic(ArtOfWar())
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)
+    card_manager.play_card(power_card, to_location=CardLocation.HAND)
+    assert jay.get_stat("energy") == 3
+
+    event_manager.trigger_event("on_player_start_turn", {})
+    event_manager.trigger_event("on_player_end_turn", {})
+    assert jay.get_stat("energy") == 4
+
+    test_listener.create_listener("on_post_play_card")
+
+    event_manager.trigger_event("on_player_start_turn", {})
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)
+    assert len(test_listener.events) == 1
+    assert test_listener.events[0][1].get("type") == CardType.ATTACK
+
+    event_manager.trigger_event("on_player_end_turn", {})
+    assert jay.get_stat("energy") == 4
