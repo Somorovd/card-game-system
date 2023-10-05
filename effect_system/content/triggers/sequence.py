@@ -28,14 +28,17 @@ class Sequence(Trigger):
             t.reset()
 
     def update(self, event_data, trigger=None):
+        if trigger and trigger == self._restart_trigger:
+            self._triggers[self._pos].reset()
+            self._pos = 0
+            self._triggers[self._pos].arm()
+            return
+
         if self._pos == len(self._triggers) - 1 and self._parent:
             self._parent.update(event_data, trigger=self)
 
         self._triggers[self._pos].reset()
-        if trigger and trigger == self._restart_trigger:
-            self._pos = 0
-        else:
-            self._pos = (self._pos + 1) % len(self._triggers)
+        self._pos = (self._pos + 1) % len(self._triggers)
         self._triggers[self._pos].arm()
 
     def add_seq(self, trigger):
