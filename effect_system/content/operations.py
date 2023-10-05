@@ -29,3 +29,11 @@ class MaxOp(Operation):
 
     def eval(self, x):
         return max(x, self.val)
+
+
+class SetOp(Operation):
+    def __init__(self, val):
+        self.val = val
+
+    def eval(self, x):
+        return self.val

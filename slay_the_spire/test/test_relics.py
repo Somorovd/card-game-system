@@ -263,3 +263,16 @@ def test_nunchaku(event_manager, game_manager, card_manager, players):
     assert jay.get_stat("energy") == 3
     card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 10
     assert jay.get_stat("energy") == 4
+
+
+def test_omamori(card_manager, players):
+    jay, larry = players
+    curse = Card("curse", CardType.CURSE, 0)
+
+    jay.equip_relic(Omamori())
+    card_manager.add_card(curse, CardLocation.DECK)
+    assert len(card_manager.deck) == 0
+    card_manager.add_card(curse, CardLocation.DECK)
+    assert len(card_manager.deck) == 0
+    card_manager.add_card(curse, CardLocation.DECK)
+    assert len(card_manager.deck) == 1

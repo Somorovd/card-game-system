@@ -64,7 +64,10 @@ class CardManager:
             "on_pre_add_card", pre_add_card_event_data
         )
 
-        self._list_from_location(location).append(card)
+        if not res["card"]:
+            return
+
+        self._list_from_location(location).append(res["card"])
 
         post_add_card_event_data = res
         self._event_manager.trigger_event("on_post_add_card", post_add_card_event_data)

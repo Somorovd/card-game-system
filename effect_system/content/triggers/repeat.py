@@ -24,5 +24,5 @@ class Repeat(Trigger):
     def update(self, event_data, trigger=None):
         self._count += 1
         if self._count == self._max_count:
-            self._parent.update(event_data, trigger=trigger)
+            self._parent.update(event_data, trigger=self)
             self._count = 0

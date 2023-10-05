@@ -7,6 +7,7 @@ class CardType(Enum):
     ATTACK = 1
     SKILL = 2
     POWER = 3
+    CURSE = 4
 
 
 class Card(Statable):
