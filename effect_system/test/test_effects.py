@@ -10,7 +10,7 @@ from ..content.validators import PropertyEquals
 def test_effect():
     class TestEffect(Effect):
         def activate(self, event_data, *target):
-            target = target[0] if target else event_data["object"]
+            target = target[0] if (target and target[0]) else event_data["object"]
             target.val = event_data["val"]
 
     return TestEffect()
