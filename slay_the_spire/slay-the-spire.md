@@ -15,7 +15,9 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 - **Burning Blood** - At the end of combat, heal 6 HP.
 - **Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
 - **Ceramic Fish** - Whenever you add a card to your deck, gain 9 gold.
+- **Happy Flower** - Every 3 turns, gain 1 Energy.
 - **Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
+- **Nunchaku** - Every time you play 10 Attacks, gain 1 Energy
 - **Ring of the Snake** - At the start of combat, draw 2 additional cards.
 - **Strawberry** - Raise your Max HP by 7.
 - **The Boot** - Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
@@ -124,17 +126,6 @@ Relic("Dream Catcher")
 )
 ```
 
-**Happy Flower** - Every 3 turns, gain 1 Energy.
-
-```python
-Relic("Happy Flower")
-.add_effect(
-	Counter(3, StatUpdate("energy", 1))
-	.set_trigger(EventTrigger("on_player_turn_start"))
-	.add_targeter(AttachedPlayerTargeter())
-)
-```
-
 **Juzu Bracelet** - Regular enemy combats are no longer encountered in ? rooms.
 
 _Requires some interaction with the game systems. See **Tiny Chest** for some ideas?_
@@ -142,8 +133,6 @@ _Requires some interaction with the game systems. See **Tiny Chest** for some id
 **Lantern** - Gain 1 Energy on the first turn of each combat.
 
 _See **Ancient Tea Set**_
-
-
 
 **Meal Ticket** - Whenever you enter a shop, heal 15 HP.
 
@@ -155,22 +144,6 @@ Relic("Meal Ticket")
         EventTrigger(
 		    "on_player_climb_floor",
 		    PropertyEquals("dest", "shop")
-        )
-	)
-	.add_targeter(AttachedPlayerTargeter())
-)
-```
-
-**Nunchaku** - Every time you play 10 Attacks, gain 1 Energy
-
-```python
-Relic("Nunchaku")
-.add_effect(
-	Counter(10, StatUpdate("energy", 1))
-	.set_trigger(
-        EventTrigger(
-		    "on_player_play_card",
-		    PropertyEquals("type", "attack")
         )
 	)
 	.add_targeter(AttachedPlayerTargeter())

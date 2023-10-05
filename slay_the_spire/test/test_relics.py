@@ -217,20 +217,49 @@ def test_ceramic_fish(game_manager, card_manager, players):
     assert jay.get_stat("gold") == 18
 
 
-def test_ceramic_fish(event_manager, game_manager, card_manager, players):
+def test_ceramic_fish(event_manager, game_manager, players):
     jay, larry = players
     game_manager.player = jay
 
     jay.equip_relic(HappyFlower())
-    event_manager.trigger_event("on_player_start_turn")
+    event_manager.trigger_event("on_player_start_turn", {})
     assert jay.get_stat("energy") == 3
-    event_manager.trigger_event("on_player_start_turn")
+    event_manager.trigger_event("on_player_start_turn", {})
     assert jay.get_stat("energy") == 3
-    event_manager.trigger_event("on_player_start_turn")
+    event_manager.trigger_event("on_player_start_turn", {})
     assert jay.get_stat("energy") == 4
-    event_manager.trigger_event("on_player_start_turn")
+    event_manager.trigger_event("on_player_start_turn", {})
     assert jay.get_stat("energy") == 4
-    event_manager.trigger_event("on_player_start_turn")
+    event_manager.trigger_event("on_player_start_turn", {})
     assert jay.get_stat("energy") == 4
-    event_manager.trigger_event("on_player_start_turn")
+    event_manager.trigger_event("on_player_start_turn", {})
     assert jay.get_stat("energy") == 5
+
+
+def test_nunchaku(event_manager, game_manager, card_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+
+    jay.equip_relic(Nunchaku())
+    attack_card = Card("attack", CardType.ATTACK, 0)
+    power_card = Card("attack", CardType.POWER, 0)
+    card_manager.hand = [attack_card, power_card]
+
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 1
+    card_manager.play_card(power_card, to_location=CardLocation.HAND)
+    assert jay.get_stat("energy") == 3
+    card_manager.play_card(power_card, to_location=CardLocation.HAND)
+    card_manager.play_card(power_card, to_location=CardLocation.HAND)
+    card_manager.play_card(power_card, to_location=CardLocation.HAND)
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 2
+    assert jay.get_stat("energy") == 3
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 3
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 4
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 5
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 6
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 7
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 8
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 9
+    assert jay.get_stat("energy") == 3
+    card_manager.play_card(attack_card, to_location=CardLocation.HAND)  # 10
+    assert jay.get_stat("energy") == 4
