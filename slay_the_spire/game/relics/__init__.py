@@ -4,6 +4,7 @@ from .art_of_war import ArtOfWar
 from .bronze_scales import BronzeScales
 from .burning_blood import BurningBlood
 from .centennial_puzzle import CentennialPuzzle
+from .ceramic_fish import CeramicFish
 from .maw_bank import MawBank
 from .ring_of_the_snake import RingOfTheSnake
 from .strawberry import Strawberry

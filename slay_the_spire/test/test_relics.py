@@ -2,6 +2,8 @@ from effect_system import Effect, EventTrigger
 
 from . import *
 from ..game.relics import *
+from ..game.card import Card, CardType
+from ..game.card_manager import CardLocation
 
 
 @pytest.fixture
@@ -173,9 +175,6 @@ def test_toy_ornithopter(event_manager, game_manager, players):
 
 
 def test_art_of_war(event_manager, game_manager, card_manager, players, test_listener):
-    from ..game.card import Card, CardType
-    from ..game.card_manager import CardLocation
-
     jay, larry = players
     game_manager.player = jay
 
@@ -201,3 +200,18 @@ def test_art_of_war(event_manager, game_manager, card_manager, players, test_lis
 
     event_manager.trigger_event("on_player_end_turn", {})
     assert jay.get_stat("energy") == 4
+
+
+def test_ceramic_fish(game_manager, card_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+
+    card = Card("card", CardType.ATTACK, 0)
+    card_manager.add_card(card, CardLocation.DECK)
+    assert jay.get_stat("gold") == 0
+
+    jay.equip_relic(CeramicFish())
+    card = Card("card", CardType.ATTACK, 0)
+    card_manager.add_card(card, CardLocation.DECK)
+    card_manager.add_card(card, CardLocation.DECK)
+    assert jay.get_stat("gold") == 18

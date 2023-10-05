@@ -14,6 +14,7 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 - **Bronze Scales** - Whenever you take damage, deal 3 damage back.
 - **Burning Blood** - At the end of combat, heal 6 HP.
 - **Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
+- **Ceramic Fish** - Whenever you add a card to your deck, gain 9 gold.
 - **Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
 - **Ring of the Snake** - At the start of combat, draw 2 additional cards.
 - **Strawberry** - Raise your Max HP by 7.
@@ -111,18 +112,6 @@ _See **Ring of the Snake**_
 **Blood Vial** - At the start of each combat, heal 2 HP
 
 _See **Burning Blood**_
-
-
-**Ceramic Fish** - Whenever you add a card to your deck, gain 9 gold.
-
-```python
-Relic("Ceramic Fish")
-.add_effect(
-	StatUpdate("gold", 9)
-	.set_trigger(EventTrigger("on_player_add_card"))
-	.add_targeter(AttachedPlayerTargeter())
-)
-```
 
 **Dream Catcher** - Whenever you rest, you may add a card to your deck.
 
