@@ -215,3 +215,22 @@ def test_ceramic_fish(game_manager, card_manager, players):
     card_manager.add_card(card, CardLocation.DECK)
     card_manager.add_card(card, CardLocation.DECK)
     assert jay.get_stat("gold") == 18
+
+
+def test_ceramic_fish(event_manager, game_manager, card_manager, players):
+    jay, larry = players
+    game_manager.player = jay
+
+    jay.equip_relic(HappyFlower())
+    event_manager.trigger_event("on_player_start_turn")
+    assert jay.get_stat("energy") == 3
+    event_manager.trigger_event("on_player_start_turn")
+    assert jay.get_stat("energy") == 3
+    event_manager.trigger_event("on_player_start_turn")
+    assert jay.get_stat("energy") == 4
+    event_manager.trigger_event("on_player_start_turn")
+    assert jay.get_stat("energy") == 4
+    event_manager.trigger_event("on_player_start_turn")
+    assert jay.get_stat("energy") == 4
+    event_manager.trigger_event("on_player_start_turn")
+    assert jay.get_stat("energy") == 5

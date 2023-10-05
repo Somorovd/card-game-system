@@ -2,7 +2,7 @@ from .trigger import Trigger
 
 
 class Repeat(Trigger):
-    def __init__(self, trigger, max_count):
+    def __init__(self, max_count, trigger):
         super().__init__()
         self._trigger = trigger
         trigger.set_parent(self)
