@@ -298,3 +298,25 @@ def test_pen_nib(event_manager, players):
     assert larry.get_stat("health") == 89
     jay.attack(larry, 1)
     assert larry.get_stat("health") == 88
+
+
+def test_bag_of_preparation(event_manager, players, card_manager):
+    jay, larry = players
+    jay.equip_relic(BagOfPreparation())
+    card_manager.draw = [Card("", None, None)] * 20
+
+    card_manager.draw_cards(2)
+    assert len(card_manager.hand) == 2
+
+    event_manager.trigger_event("on_combat_start", {})
+    card_manager.draw_cards(2)
+    assert len(card_manager.hand) == 6
+
+    event_manager.trigger_event("on_combat_start", {})
+    card_manager.draw_cards(0)
+    assert len(card_manager.hand) == 8
+
+    event_manager.trigger_event("on_combat_start", {})
+    event_manager.trigger_event("on_player_turn_end", {})
+    card_manager.draw_cards(2)
+    assert len(card_manager.hand) == 10

@@ -11,6 +11,7 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 
 - **Akabako** - Your first attack each combat deals 8 additional damage.
 - **Art of War** - If you do not play any Attacks during your turn, gain an extra energy next turn
+- **Bag of Preparation** - At the start of each combat, draw 2 additional cards
 - **Bronze Scales** - Whenever you take damage, deal 3 damage back.
 - **Burning Blood** - At the end of combat, heal 6 HP.
 - **Centennial Puzzle** - The first time you lose HP each combat, draw 3 cards.
@@ -108,10 +109,6 @@ Status("Vulnerable")
 	.set_trigger(EventTrigger("on_player_end_turn"))
 )
 ```
-
-**Bag of Preparation** - At the start of each combat, draw 2 additional cards
-
-_See **Ring of the Snake**_
 
 **Blood Vial** - At the start of each combat, heal 2 HP
 

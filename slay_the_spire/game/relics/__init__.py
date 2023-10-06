@@ -1,6 +1,7 @@
 from .relic import Relic
 from .akabako import Akabako
 from .art_of_war import ArtOfWar
+from .bag_of_preparation import BagOfPreparation
 from .bronze_scales import BronzeScales
 from .burning_blood import BurningBlood
 from .centennial_puzzle import CentennialPuzzle
