@@ -18,6 +18,8 @@ Using ideas from existing code to create the relics from Slay the Spire. This wi
 - **Happy Flower** - Every 3 turns, gain 1 Energy.
 - **Maw Bank** - Whenever you climb a floor, gain 12 Gold. No longer works when you spend and Gold at the shop.
 - **Nunchaku** - Every time you play 10 Attacks, gain 1 Energy
+- **Omamori** - Negate the next 2 Curses you obtain.
+- **Pen Nib** - Every 10th Attack you play deals double damage.
 - **Ring of the Snake** - At the start of combat, draw 2 additional cards.
 - **Strawberry** - Raise your Max HP by 7.
 - **The Boot** - Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
@@ -170,23 +172,6 @@ Status("Dexterity")
 )
 ```
 
-**Omamori** - Negate the next 2 Curses you obtain.
-
-_I set card to None in the event, but there may be a better way to not interfere with other events that may want to know the card_
-
-```python
-Relic("Omamori")
-.add_effect(
-	NTimes(2, EventDataUpdate("card", None))
-	.set_trigger(
-        EventTrigger(
-            "on_player_add_card",
-            PropertyEquals("type", "curse")
-        )
-	)
-)
-```
-
 **Oricalcum** - If you end your turn without Block, gain 6 Block
 
 ```python
@@ -207,10 +192,6 @@ Relic("Orichalcum")
 	.add_targeter(AttachedPlayerTargeter())
 )
 ```
-
-**Pen Nib** - Every 10th Attck you play deals double damage.
-
-_See **Nunchaku**_
 
 **Potion Belt** - Upon pickup, gain 2 Potion slots
 

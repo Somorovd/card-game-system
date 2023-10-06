@@ -217,7 +217,7 @@ def test_ceramic_fish(game_manager, card_manager, players):
     assert jay.get_stat("gold") == 18
 
 
-def test_ceramic_fish(event_manager, game_manager, players):
+def test_happy_flower(event_manager, game_manager, players):
     jay, larry = players
     game_manager.player = jay
 
@@ -276,3 +276,25 @@ def test_omamori(card_manager, players):
     assert len(card_manager.deck) == 0
     card_manager.add_card(curse, CardLocation.DECK)
     assert len(card_manager.deck) == 1
+
+
+def test_pen_nib(event_manager, players):
+    jay, larry = players
+
+    jay.equip_relic(PenNib())
+
+    jay.attack(larry, 1)  # 1
+    assert larry.get_stat("health") == 99
+    jay.attack(larry, 1)  # 2
+    jay.attack(larry, 1)  # 3
+    jay.attack(larry, 1)  # 4
+    jay.attack(larry, 1)  # 5
+    jay.attack(larry, 1)  # 6
+    jay.attack(larry, 1)  # 7
+    jay.attack(larry, 1)  # 8
+    jay.attack(larry, 1)  # 9
+    assert larry.get_stat("health") == 91
+    jay.attack(larry, 1)  # 10
+    assert larry.get_stat("health") == 89
+    jay.attack(larry, 1)
+    assert larry.get_stat("health") == 88

@@ -9,6 +9,7 @@ from .happy_flower import HappyFlower
 from .maw_bank import MawBank
 from .nunchaku import Nunchaku
 from .omamori import Omamori
+from .pen_nib import PenNib
 from .ring_of_the_snake import RingOfTheSnake
 from .strawberry import Strawberry
 from .the_boot import TheBoot
